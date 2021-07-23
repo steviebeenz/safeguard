@@ -1,0 +1,246 @@
+package intentions;
+
+// Java IO
+import java.io.*;
+
+// Java Net
+import java.net.*;
+
+// Arrays and lists (in the *)
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+// Display
+import org.lwjgl.opengl.Display;
+
+// Logins
+import com.mojang.authlib.Agent;
+import com.mojang.authlib.exceptions.AuthenticationException;
+import com.mojang.authlib.yggdrasil.*;
+import com.mojang.realmsclient.dto.RealmsServer.McoServerComparator;
+
+// Command manager
+import intentions.command.CommandManager;
+
+// Events
+import intentions.events.Event;
+import intentions.events.listeners.*;
+
+// Modules
+import intentions.modules.Module;
+import intentions.modules.Module.Category;
+import intentions.modules.chat.*;
+import intentions.modules.combat.*;
+import intentions.modules.movement.*;
+import intentions.modules.player.*;
+import intentions.modules.world.*;
+import intentions.modules.render.*;
+
+// UI
+import intentions.ui.HUD;
+
+// Waypoints
+import intentions.waypoints.Waypoint;
+
+// Minecraft
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.*;
+
+public class Client {
+	
+	public static String name = "SafeGuard", version = "b3.2.9";
+	public static CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList<Module>();
+	public static HUD hud = new HUD();
+	public static CommandManager commandManager = new CommandManager();
+	public static String fullName = name + " " + version;
+	
+	private static void a(Module m) {
+		modules.add(m);
+		System.out.println("[" + Client.name + "] Loaded " + m.name);
+	}
+
+	
+	public static void startup() {
+		System.out.println("[" + name + "] Starting " + name + " " + version);
+		Display.setTitle(name + " " + version);
+		
+		// World
+		a(new Scaffold());
+		
+		a(new TimerHack());
+		
+		a(new ChestStealer());
+		
+		// Movement
+		a(new Flight());
+		
+		a(new Sprint());
+		
+		a(new Speed());
+		
+		a(new Hover());
+		
+		a(new AirHop());
+		
+		a(new BHop());
+		
+		a(new BPS());
+		
+		a(new Step());
+		
+		a(new LongJump());
+		
+		// Player
+		a(new NoFall());
+		
+		a(new NoSlowdown());
+		
+		a(new AntiCactus());
+		
+		a(new Jesus());
+		
+		a(new Rotation());
+		
+		a(new AntiVoid());
+		
+		a(new AutoSoup());
+		
+		a(new AutoTool());
+		
+		a(new LiquidInteract());
+		
+		// Render
+		a(new FullBright());
+		
+		a(new ESP());
+		
+		// Combat
+		a(new KillAura());
+		
+		a(new MultiAura());
+		
+		a(new Velocity());
+		
+		a(new Criticals());
+		
+		a(new AutoArmor());
+		
+		// Chat
+		a(new Spammer());
+		
+		a(new Watermark());
+		
+		// TabGUI
+		a(new TabGUI());
+		
+		File file = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard\\alt.txt");
+		
+		if(file.exists()) {
+			StringBuilder f = new StringBuilder();
+			try {
+				  
+				  BufferedReader br = new BufferedReader(new FileReader(file));
+				  
+				  String st;
+				  while ((st = br.readLine()) != null) {
+					   f.append(st);
+				  }
+				  br.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			
+			String d = f.toString();
+			
+			final String args[] = d.split(":");
+			if(args[0].contains("@") && args[0].contains(".")) {
+				final YggdrasilUserAuthentication authentication = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(Proxy.NO_PROXY, "").createUserAuthentication(Agent.MINECRAFT);
+				authentication.setUsername(args[0]);
+				authentication.setPassword(args[1]);
+				try {
+					authentication.logIn();
+					
+					Minecraft.getMinecraft().session = new Session(authentication.getSelectedProfile().getName(), authentication.getSelectedProfile().getId().toString(), authentication.getAuthenticatedToken(), "mojang");	
+				} catch (AuthenticationException e) {
+					e.printStackTrace();
+				}
+			} else {
+				Minecraft.getMinecraft().session = new Session(d, "", "", "mojang");
+			}
+		}
+	}
+	
+	public static void onEvent(Event e) {
+		if(e instanceof EventChat) {
+			commandManager.handleChat((EventChat)e);
+		}
+		
+		for(Module m : modules) {
+			if (!m.toggled && !m.name.equalsIgnoreCase("TabGUI"))
+				continue;
+			m.onEvent(e);
+		}
+	}
+	
+	public static void keyPress(int key) {
+		Client.onEvent(new EventKey(key));
+		
+		for(Module m : modules) {
+			if (m.getKey() == key && TabGUI.openTabGUI) {
+				m.toggle();
+				break;
+			}
+		}
+	}
+	
+	public static List<Module> getModulesByCategory(Category c){
+		List<Module> modules = new ArrayList<Module>();
+		
+		for(Module m : Client.modules) {
+			if (m.category == c) {
+				modules.add(m);
+			}
+		}
+		
+		return modules;
+	}
+	
+	public static void addChatMessage(Object b) {
+		b = "\2478[\247c" + name + "\2478] \2477" + b;
+		
+		if(b.toString().contains("Disabled ")) {
+			if (!TabGUI.openTabGUI) {
+				return;
+			};
+		};
+		
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(b.toString()));
+	}
+	
+	public static void onRender() {
+		for(Module module : Client.modules) {
+			if(!module.toggled)continue;
+			module.onRender();
+		}
+	}
+	
+	public static void onTick() {
+		if(!TabGUI.openTabGUI) return;
+		for (Module module : Client.modules) {
+			if(!module.toggled) continue;
+			module.onTick();
+		}
+		Waypoint.onTick();
+	}
+	
+	public static void onUpdate() {
+		if(!TabGUI.openTabGUI) return;
+		for(Module module : Client.modules) {
+			if(module.name == "Flight" && (!module.toggled || !((Flight)module).type.getMode().equalsIgnoreCase("Redesky"))) {
+				Minecraft.getMinecraft().thePlayer.speedInAir = 0.02f;
+			}
+			((Module)module).onUpdate();
+		}
+		
+	}
+}
