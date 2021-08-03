@@ -8,6 +8,7 @@ import intentions.settings.BooleanSetting;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
 import intentions.settings.Setting;
+import intentions.util.PlayerUtil;
 import intentions.util.RenderUtils;
 import intentions.util.Timer;
 import java.util.List;
@@ -80,6 +81,7 @@ public class MultiAura extends Module {
       } else if (priority.getMode() == "Players") {
         targets = (List<EntityLivingBase>)targets.stream().filter(EntityPlayer.class::isInstance).collect(Collectors.toList());
       } 
+      targets = PlayerUtil.removeNotNeeded(targets);
       if (!targets.isEmpty()) {
     	  this.targets = targets;
     	  timeSinceLastAtk = 0;

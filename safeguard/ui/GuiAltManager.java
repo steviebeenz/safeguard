@@ -70,12 +70,10 @@ public class GuiAltManager extends GuiScreen {
 								
 								this.status = "§aLogged into " + mc.session.getUsername();
 									
-								if(!Files.exists(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard")))
-									Files.createDirectory(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard"));
+								if(!Files.exists(Paths.get(System.getProperty("user.dir") + "\\SafeGuard")))
+									Files.createDirectory(Paths.get(System.getProperty("user.dir") + "\\SafeGuard"));
 								
-								byte[] str = loginField.getText().getBytes();
-								
-								Files.write(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard\\alt.txt"), str);
+								write("alt.txt", loginField.getText());
 							} catch (IOException e) {
 								e.printStackTrace();
 							}catch (AuthenticationException e) {
@@ -86,12 +84,10 @@ public class GuiAltManager extends GuiScreen {
 								
 							this.status = "§aLogged into " + loginField.getText() + " (" + loginField.getText().length() + ")";
 							
-							if(!Files.exists(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard")))
-								Files.createDirectory(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard"));
-
-							byte[] str = loginField.getText().getBytes();
+							if(!Files.exists(Paths.get(System.getProperty("user.dir") + "\\SafeGuard")))
+								Files.createDirectory(Paths.get(System.getProperty("user.dir") + "\\SafeGuard"));
 							
-							Files.write(Paths.get("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard\\alt.txt"), str);
+							write("alt.txt", loginField.getText());
 						
 						}
 					}catch (Exception e) {
@@ -121,4 +117,14 @@ public class GuiAltManager extends GuiScreen {
 	public void updateScreen() {
 		loginField.updateCursorCounter();
 	}
+	
+	public static void write(String file, String write) {
+		try {
+			Files.write(Paths.get(System.getProperty("user.dir") + "\\SafeGuard\\" + file), write.getBytes());
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
+	
 }

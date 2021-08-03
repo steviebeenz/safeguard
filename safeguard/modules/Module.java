@@ -89,4 +89,7 @@ public class Module {
 			this.name = name;
 		}
 	}
+
+	public void onRightClick() { }
+	
 }

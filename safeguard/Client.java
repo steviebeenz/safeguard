@@ -1,31 +1,32 @@
 package intentions;
 
 // Java IO
-import java.io.*;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 // Java Net
-import java.net.*;
-
+import java.net.Proxy;
 // Arrays and lists (in the *)
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 // Display
 import org.lwjgl.opengl.Display;
 
+import com.ibm.icu.text.MessagePatternUtil.ComplexArgStyleNode;
 // Logins
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.exceptions.AuthenticationException;
-import com.mojang.authlib.yggdrasil.*;
-import com.mojang.realmsclient.dto.RealmsServer.McoServerComparator;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 
 // Command manager
 import intentions.command.CommandManager;
-
 // Events
 import intentions.events.Event;
 import intentions.events.listeners.*;
-
 // Modules
 import intentions.modules.Module;
 import intentions.modules.Module.Category;
@@ -33,22 +34,20 @@ import intentions.modules.chat.*;
 import intentions.modules.combat.*;
 import intentions.modules.movement.*;
 import intentions.modules.player.*;
-import intentions.modules.world.*;
 import intentions.modules.render.*;
-
+import intentions.modules.world.*;
 // UI
 import intentions.ui.HUD;
-
 // Waypoints
 import intentions.waypoints.Waypoint;
-
 // Minecraft
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Session;
 
 public class Client {
 	
-	public static String name = "SafeGuard", version = "b3.2.9";
+	public static String name = "SafeGuard", version = "b3.3.1";
 	public static CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList<Module>();
 	public static HUD hud = new HUD();
 	public static CommandManager commandManager = new CommandManager();
@@ -90,6 +89,8 @@ public class Client {
 		
 		a(new LongJump());
 		
+		a(new ClickTP());
+		
 		// Player
 		a(new NoFall());
 		
@@ -108,6 +109,10 @@ public class Client {
 		a(new AutoTool());
 		
 		a(new LiquidInteract());
+		
+		a(new InvMove());
+		
+		a(new Team());
 		
 		// Render
 		a(new FullBright());
@@ -133,7 +138,7 @@ public class Client {
 		// TabGUI
 		a(new TabGUI());
 		
-		File file = new File("C:\\Users\\" + System.getProperty("user.name") + "\\AppData\\Roaming\\.minecraft\\SafeGuard\\alt.txt");
+		File file = new File(System.getProperty("user.dir") + "\\SafeGuard\\alt.txt");
 		
 		if(file.exists()) {
 			StringBuilder f = new StringBuilder();
@@ -168,6 +173,50 @@ public class Client {
 				Minecraft.getMinecraft().session = new Session(d, "", "", "mojang");
 			}
 		}
+		
+		file = new File(System.getProperty("user.dir") + "\\SafeGuard\\settings.txt");
+		
+		if(file.exists()) {
+			StringBuilder f = new StringBuilder();
+			try {
+				  
+				  BufferedReader br = new BufferedReader(new FileReader(file));
+				  
+				  String st;
+				  while ((st = br.readLine()) != null) {
+					   f.append(st);
+				  }
+				  br.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			
+			String d = f.toString();
+			
+			String[] args = d.split(";");
+			
+			
+			
+			try {
+				
+				for(Module m : modules) {
+					
+					if(m.name.equalsIgnoreCase(args[1])) {
+						
+						boolean tof = args[0].equalsIgnoreCase("true");
+						
+						m.toggled = tof;
+						
+						break;
+						
+					}
+					
+				}
+				
+			}catch(Exception e) {}
+			
+		}
+		
 	}
 	
 	public static void onEvent(Event e) {

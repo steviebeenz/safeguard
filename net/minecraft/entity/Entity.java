@@ -390,6 +390,32 @@ public abstract class Entity implements ICommandSender
     {
         this.onEntityUpdate();
     }
+    
+    /**
+     * 
+     * Client Raytrace Stuff
+     * 
+     */
+    
+    public Vec3 getPositionEyes(float partialTicks) {
+		if (partialTicks == 1.0F) {
+			return new Vec3(this.posX, this.posY + (double) this.getEyeHeight(), this.posZ);
+		} else {
+			double d0 = this.prevPosX + (this.posX - this.prevPosX) * (double) partialTicks;
+			double d1 = this.prevPosY + (this.posY - this.prevPosY) * (double) partialTicks
+					+ (double) this.getEyeHeight();
+			double d2 = this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTicks;
+			return new Vec3(d0, d1, d2);
+		}
+	}
+    
+    public MovingObjectPosition rayTrace(double blockReachDistance, float partialTicks) {
+		Vec3 vec3 = this.getPositionEyes(partialTicks);
+		Vec3 vec31 = this.getLook(partialTicks);
+		Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance,
+				vec31.zCoord * blockReachDistance);
+		return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true);
+	}
 
     /**
      * Gets called every tick from main Entity class

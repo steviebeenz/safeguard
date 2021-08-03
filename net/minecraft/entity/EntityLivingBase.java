@@ -1306,7 +1306,8 @@ public abstract class EntityLivingBase extends Entity
      */
     public final int getArrowCountInEntity()
     {
-        return this.dataWatcher.getWatchableObjectByte(9);
+    	return 0;
+        //return this.dataWatcher.getWatchableObjectByte(9);
     }
 
     /**

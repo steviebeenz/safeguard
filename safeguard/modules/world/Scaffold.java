@@ -178,7 +178,6 @@ public class Scaffold extends Module {
     	
     	if(face == EnumFacing.UP) {
     		pos = pos.add(0, -1, 0);
-    		if(timerTower.isEnabled()) mc.timer.timerSpeed = 3f;
     	} else if (face == EnumFacing.NORTH) {
     		pos = pos.add(0, 0, 1);
     	} else if (face == EnumFacing.EAST) {
@@ -189,7 +188,6 @@ public class Scaffold extends Module {
     		pos = pos.add(1, 0, 0);
     	}
     	
-    	if(face != EnumFacing.UP && !TimerHack.Timer) mc.timer.timerSpeed = 1f;
     	
     	if(mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock) {
     		
@@ -210,11 +208,17 @@ public class Scaffold extends Module {
     		double var14 = MathHelper.sqrt_double(var4 * var4 + var6 * var6);
     		float yaw = (float) (Math.atan2(var6, var4) * 180.0D / Math.PI) - 90.0F;
     		float pitch = (float) -(Math.atan2(var8, var14) * 180.0D / Math.PI) - 90.0F;
-    		mc.thePlayer.swingItem();
 			
-			mc.playerController.func_178890_a(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, face, new Vec3(0.5D, 0.5D, 0.5D));
+			
+			if(face == EnumFacing.UP) {
+				yaw = -0f;
+				pitch = -90f;
+			}
 			
 			mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, -yaw, -pitch, mc.thePlayer.onGround));
+    	
+			mc.thePlayer.swingItem();
+			mc.playerController.func_178890_a(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, face, new Vec3(0.5D, 0.5D, 0.5D));
     	}
     }
     

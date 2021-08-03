@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.modules.Module;
@@ -13,6 +12,7 @@ import intentions.settings.BooleanSetting;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
 import intentions.settings.Setting;
+import intentions.util.PlayerUtil;
 import intentions.util.RenderUtils;
 import intentions.util.Timer;
 import net.minecraft.entity.Entity;
@@ -94,6 +94,7 @@ public class KillAura extends Module {
       } else if (this.sort.getMode() == "Furthest") {
         targets.sort(Comparator.<EntityLivingBase>comparingDouble(entity -> ((EntityLivingBase)entity).getDistanceToEntity((Entity)this.mc.thePlayer)).reversed());
       } 
+      targets = PlayerUtil.removeNotNeeded(targets);
       if (!targets.isEmpty()) {
         EntityLivingBase target = targets.get(0);
         if (this.rotation.getMode() == "Server") {
@@ -109,7 +110,7 @@ public class KillAura extends Module {
         if (this.timer.hasTimeElapsed((long)(1000.0D / this.cps.getValue()), true)) {
         
           if(!invisibles.isEnabled() && target.isInvisible()) return;
-        	
+        
           if (this.noSwing.isEnabled()) {
             this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C0APacketAnimation());
           } else {
@@ -133,6 +134,7 @@ public class KillAura extends Module {
   public void render(float red, float green, float blue, double x, double y, double z, float width, float height) {
 	  RenderUtils.drawEntityESP(x, y, z, width - (width / 4), height, red, green, blue, 0.2F, 0F, 0F, 0F, 1F, 1F);
   }
+  
   
   public float[] getRotations(Entity e) {
     double deltaX = e.posX + e.posX - e.lastTickPosX - this.mc.thePlayer.lastTickPosX;

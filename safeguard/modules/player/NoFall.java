@@ -12,6 +12,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class NoFall extends Module {
   
+  public static boolean shouldWork = true;
   private BooleanSetting steppatch = new BooleanSetting("StepPatch", false);
   private ModeSetting mode = new ModeSetting("Mode", "Default", new String[] {"ACD", "Default"});
   public boolean NoFall;
@@ -32,7 +33,7 @@ public class NoFall extends Module {
   public void onEvent(Event e) {
     if (e instanceof intentions.events.listeners.EventUpdate && 
       e.isPre()
-    	&& NoFall) {
+    	&& NoFall && shouldWork) {
     	if(mode.getMode().equalsIgnoreCase("Default")) {
 	      boolean stepEnabled = false;
 	      for(Module module : Client.modules) {

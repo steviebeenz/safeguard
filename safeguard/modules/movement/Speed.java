@@ -1,12 +1,18 @@
 package intentions.modules.movement;
 
+import org.apache.http.conn.ClientConnectionRequest;
 import org.lwjgl.input.Keyboard;
 
+import intentions.Client;
+import intentions.events.Event;
+import intentions.events.listeners.EventMotion;
 import intentions.modules.Module;
 import intentions.settings.BooleanSetting;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
+import intentions.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class Speed extends Module {
 	
@@ -22,6 +28,18 @@ public class Speed extends Module {
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	
+	public void onEnable() {
+		y = mc.thePlayer.posY;
+	}
+	
+	double y=0;
+	boolean onGround = false;
+	
+	public void onEvent(Event e) {
+		if (e instanceof EventMotion) {
+		}
+	}
+	
 	public void onTick(){
 		if (mc.thePlayer == null) {
 			return;
@@ -29,10 +47,10 @@ public class Speed extends Module {
 			if((mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) && !mc.thePlayer.isSneaking()) {
 				if (bypass.getMode().equalsIgnoreCase("Strafe")) {
 					if(mc.thePlayer.onGround && jump.isEnabled()) mc.thePlayer.jump();
-					mc.thePlayer.onGround = true;
 					mc.thePlayer.motionX *= movementSpeed.getValue();
 		    		mc.thePlayer.motionZ *= movementSpeed.getValue();
-					return;
+					mc.thePlayer.onGround = true;
+		    		return;
 				}
 				if (mc.thePlayer.onGround && waitOnGround.isEnabled()) {
 					if (jump.isEnabled()) mc.thePlayer.jump(); 
@@ -51,7 +69,7 @@ public class Speed extends Module {
 				if(bypass.getMode().equalsIgnoreCase("Panda") && mc.thePlayer.motionY > 0) {
 					mc.thePlayer.motionY -= 0.1;
 				}
-			}
+			} 
 		}
 	}
 	

@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
+import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiChest extends GuiContainer
@@ -44,6 +46,14 @@ public class GuiChest extends GuiContainer
         this.fontRendererObj.drawString(this.lowerChestInventory.getDisplayName().getUnformattedText(), 8, 6, 4210752);
         this.fontRendererObj.drawString(this.upperChestInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
+    
+    /**
+     * stealtime :D
+     */
+    
+    protected long getSleepTime() {
+    	return (long) Math.floor(((Math.floor(Math.random() * 8))-4 + ChestStealer.stealSpeed.getValue()));
+    }
 
     /**
      * Args : renderPartialTicks, mouseX, mouseY
@@ -77,14 +87,15 @@ public class GuiChest extends GuiContainer
         					for(int i = 0; i < GuiChest.this.inventoryRows * 9; i++) {
         						Slot slot = (Slot) GuiChest.this.inventorySlots.inventorySlots.get(i);
         						if(slot.getStack() != null && !slot.getStack().getItem().toString().equals("net.minecraft.item.ItemSkull@6e807e2")) {
-        							Thread.sleep((long) ChestStealer.stealSpeed.getValue());
-        							System.out.println("STEAL ITEM: " + slot.getStack().getItem());
+        							Thread.sleep(getSleepTime());
         							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 1);
         							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 6);
         						}
         					}
         					if(ChestStealer.autoClose.isEnabled()) {
         						Thread.sleep(250L);
+        						if(mc.currentScreen == null)return;
+        						mc.thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow());
         						mc.displayGuiScreen(null);
         					}
         				} catch (Exception e) {
@@ -111,7 +122,7 @@ public class GuiChest extends GuiContainer
     					for(int i = 0; i < GuiChest.this.inventoryRows * 9; i++) {
     						Slot slot = (Slot) GuiChest.this.inventorySlots.inventorySlots.get(i);
     						if(slot.getStack() != null) {
-    							Thread.sleep((long) ChestStealer.stealSpeed.getValue());
+    							Thread.sleep(getSleepTime());
     							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 1);
     							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 6);
     						}
@@ -130,7 +141,7 @@ public class GuiChest extends GuiContainer
     					for(int i = GuiChest.this.inventoryRows * 9; i <GuiChest.this.inventoryRows * 9+44; i++) {
     						Slot slot = (Slot) GuiChest.this.inventorySlots.inventorySlots.get(i);
     						if(slot.getStack() != null) {
-    							Thread.sleep((long) ChestStealer.stealSpeed.getValue());
+    							Thread.sleep(getSleepTime());
     							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 1);
     							GuiChest.this.handleMouseClick(slot, slot.slotNumber, 0, 6);
     						}

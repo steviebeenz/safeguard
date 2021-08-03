@@ -23,9 +23,7 @@ public class VClip extends Command {
 				
 				Minecraft mc = Minecraft.getMinecraft();	
 				
-				mc.thePlayer.posY = mc.thePlayer.posY + amount;
-				mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + amount, mc.thePlayer.posY, mc.thePlayer.onGround));
-				
+				mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + amount, mc.thePlayer.posZ);
 			} catch(Exception e) {
 				Client.addChatMessage("That isn't a number!");
 			}

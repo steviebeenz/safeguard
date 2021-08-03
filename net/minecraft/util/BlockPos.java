@@ -74,6 +74,34 @@ public class BlockPos extends Vec3i
     {
         return new BlockPos(this.getX() + vec.getX(), this.getY() + vec.getY(), this.getZ() + vec.getZ());
     }
+    
+	/**
+	 * Offset this BlockPos 1 block up
+	 */
+	public BlockPos up() {
+		return this.up(1);
+	}
+
+	/**
+	 * Offset this BlockPos n blocks up
+	 */
+	public BlockPos up(int n) {
+		return this.offset(EnumFacing.UP, n);
+	}
+
+	/**
+	 * Offset this BlockPos 1 block down
+	 */
+	public BlockPos down() {
+		return this.down(1);
+	}
+
+	/**
+	 * Offset this BlockPos n blocks down
+	 */
+	public BlockPos down(int n) {
+		return this.offset(EnumFacing.DOWN, n);
+	}
 
     /**
      * Subtract the given Vector from this BlockPos

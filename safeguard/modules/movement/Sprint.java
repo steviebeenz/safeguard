@@ -30,7 +30,6 @@ public class Sprint extends Module {
 				}
 				if((omni.isEnabled() || mc.thePlayer.moveForward > 0) && mc.thePlayer.moveForward != 0 && (!mc.thePlayer.isUsingItem() || NoSlowdown.noSlowdown) && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking()) {
 					mc.thePlayer.setSprinting(true);
-					System.out.println(mc.thePlayer.motionZ + " " + mc.thePlayer.motionX);
 				}
 			}
 		}

@@ -7,6 +7,7 @@ import java.security.KeyRep;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import intentions.Client;
@@ -302,7 +303,28 @@ public class TabGUI extends Module {
 			}
 			
 		}
+		
+		else if (e instanceof EventUpdate) 
+		{
+			
+			if(Mouse.isButtonDown(1)) {
+				
+				if(rightClick == false) {
+					rightClick = true;
+					for(Module m : Client.modules) {
+						if(m.isEnabled())
+							m.onRightClick();
+					}
+				}
+				
+			} else {
+				rightClick = false;
+			}
+			
+		}
 	}
+	
+	private boolean rightClick = false;
 	
 	public String getKeyName(String key) {
 		key = key.
