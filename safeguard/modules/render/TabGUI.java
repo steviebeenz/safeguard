@@ -17,6 +17,7 @@ import intentions.events.listeners.EventRenderGUI;
 import intentions.events.listeners.EventUpdate;
 import intentions.modules.Module;
 import intentions.modules.movement.Flight;
+import intentions.modules.world.ChestStealer;
 import intentions.settings.*;
 import intentions.ui.GuiDescription;
 import intentions.ui.GuiSpamText;
@@ -136,13 +137,10 @@ public class TabGUI extends Module {
 				openTabGUI = !openTabGUI;
 				if(!openTabGUI) {
 					Display.setTitle("Minecraft 1.8");
-					for (Module module : Client.modules) {
-						if(module.name != "TabGUI" && module.name != "ChestStealer") {
-							if(module.toggled == true) {
-								module.toggle();
-							}
-						}
+					for (Module module : Client.toggledModules) {
+						module.toggle();
 					}
+					ChestStealer.autoSteal = new BooleanSetting("AutoSteal", false);
 
 					Client.addChatMessage("Self destructed (F10)");
 				} else {
@@ -311,9 +309,8 @@ public class TabGUI extends Module {
 				
 				if(rightClick == false) {
 					rightClick = true;
-					for(Module m : Client.modules) {
-						if(m.isEnabled())
-							m.onRightClick();
+					for(Module m : Client.toggledModules) {
+						m.onRightClick();
 					}
 				}
 				

@@ -7,10 +7,12 @@ import java.util.List;
 
 import intentions.Client;
 import intentions.events.Event;
+import intentions.events.listeners.EventPacket;
 import intentions.settings.KeybindSetting;
 import intentions.settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.Packet;
 
 public class Module {
 
@@ -58,8 +60,10 @@ public class Module {
 		
 		if (toggled) { 
 			onEnable();
+			Client.toggledModules.add(this);
 			return;
 		}
+		Client.toggledModules.remove(this);
 		onDisable();
 	}
 	
@@ -91,5 +95,7 @@ public class Module {
 	}
 
 	public void onRightClick() { }
+ 
+	public void onSendPacket(EventPacket eventPacket) { }
 	
 }

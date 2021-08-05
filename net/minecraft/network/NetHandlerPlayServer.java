@@ -1,10 +1,5 @@
 package net.minecraft.network;
 
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Futures;
-import io.netty.buffer.Unpooled;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +7,20 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+
+import intentions.Client;
+import intentions.events.listeners.EventPacket;
+import intentions.modules.Module;
+import io.netty.buffer.Unpooled;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.block.material.Material;
 import net.minecraft.command.server.CommandBlockLogic;
 import net.minecraft.crash.CrashReport;
@@ -89,9 +98,6 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.WorldServer;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class NetHandlerPlayServer implements INetHandlerPlayServer, IUpdatePlayerListBox
 {
@@ -720,6 +726,15 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, IUpdatePlaye
 
     public void sendPacket(final Packet packetIn)
     {
+    	
+    	EventPacket eventPacket = new EventPacket(packetIn);
+    	
+    	for(Module m : Client.toggledModules) {
+    		m.onSendPacket(eventPacket);
+    	}
+    	
+    	if(eventPacket.getCancelled())return;
+    	
         if (packetIn instanceof S02PacketChat)
         {
             S02PacketChat var2 = (S02PacketChat)packetIn;

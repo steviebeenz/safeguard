@@ -2,6 +2,10 @@ package net.minecraft.network;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import intentions.Client;
+import intentions.events.listeners.EventPacket;
+import intentions.modules.Module;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -161,6 +165,15 @@ public class NetworkManager extends SimpleChannelInboundHandler
 
     public void sendPacket(Packet packetIn)
     {
+    	
+    	EventPacket eventPacket = new EventPacket(packetIn);
+    	
+    	for(Module m : Client.toggledModules) {
+    		m.onSendPacket(eventPacket);
+    	}
+    	
+    	if(eventPacket.getCancelled())return;
+    	
         if (this.channel != null && this.channel.isOpen())
         {
             this.flushOutboundQueue();
@@ -174,6 +187,15 @@ public class NetworkManager extends SimpleChannelInboundHandler
 
     public void sendPacket(Packet packetIn, GenericFutureListener listener, GenericFutureListener ... listeners)
     {
+    	
+    	EventPacket eventPacket = new EventPacket(packetIn);
+    	
+    	for(Module m : Client.toggledModules) {
+    		m.onSendPacket(eventPacket);
+    	}
+    	
+    	if(eventPacket.getCancelled())return;
+    	
         if (this.channel != null && this.channel.isOpen())
         {
             this.flushOutboundQueue();

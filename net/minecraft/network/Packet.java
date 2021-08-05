@@ -4,7 +4,8 @@ import java.io.IOException;
 
 public interface Packet
 {
-    /**
+
+	/**
      * Reads the raw packet data from the data stream.
      */
     void readPacketData(PacketBuffer var1) throws IOException;
@@ -18,4 +19,5 @@ public interface Packet
      * Passes this Packet on to the NetHandler for processing.
      */
     void processPacket(INetHandler var1);
+    
 }

@@ -35,10 +35,10 @@ public class Jesus extends Module {
 				  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0958195819595185918, mc.thePlayer.posZ, false));
 				  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			  }
-			  if(BlockUtils.isLiquidBlock(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)).getBlock())) {
+			  if(BlockUtils.isLiquidBlock(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ)).getBlock())) {
 			    mc.thePlayer.motionY += 0F + ((mode.getMode().equalsIgnoreCase("NCP")) ? 0.5F : (mc.thePlayer.isSneaking()) ? 0F : 0.05F);
 			    if (!mode.getMode().equalsIgnoreCase("NCP")) return;
-			    mc.thePlayer.motionY = Math.min(mc.thePlayer.motionY, 0.23F);
+			    mc.thePlayer.motionY = Math.min(mc.thePlayer.motionY, 0.25F);
 			    mc.gameSettings.keyBindJump.pressed = false;
 			  }
 		  }catch(Throwable t) {

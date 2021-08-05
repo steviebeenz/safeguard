@@ -97,13 +97,6 @@ public class KillAura extends Module {
       targets = PlayerUtil.removeNotNeeded(targets);
       if (!targets.isEmpty()) {
         EntityLivingBase target = targets.get(0);
-        if (this.rotation.getMode() == "Server") {
-          event.setYaw((float) ((float) getRotations((Entity)target)[0] + Math.floor(Math.random() * 30)));
-          event.setPitch((float) (getRotations((Entity)target)[1] + Math.floor(Math.random() * 30)));
-        } else {
-          this.mc.thePlayer.rotationYaw = getRotations((Entity)target)[0];
-          this.mc.thePlayer.rotationPitch = getRotations((Entity)target)[1];
-        } 
         
         this.target = target;
         timeSinceLastAtk = 0;
@@ -111,6 +104,14 @@ public class KillAura extends Module {
         
           if(!invisibles.isEnabled() && target.isInvisible()) return;
         
+          if (this.rotation.getMode() == "Server") {
+              event.setYaw((float) ((float) getRotations((Entity)target)[0] + Math.floor(Math.random() * 10)));
+              event.setPitch((float) (getRotations((Entity)target)[1] + Math.floor(Math.random() * 10)));
+            } else {
+              this.mc.thePlayer.rotationYaw = getRotations((Entity)target)[0];
+              this.mc.thePlayer.rotationPitch = getRotations((Entity)target)[1];
+            } 
+          
           if (this.noSwing.isEnabled()) {
             this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C0APacketAnimation());
           } else {

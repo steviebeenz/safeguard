@@ -6,6 +6,7 @@ import intentions.events.listeners.EventChat;
 import intentions.events.listeners.EventMotion;
 import intentions.events.listeners.EventUpdate;
 import intentions.modules.chat.Watermark;
+import intentions.modules.player.Blink;
 import intentions.modules.player.NoSlowdown;
 import intentions.util.BlockUtils;
 import net.minecraft.client.Minecraft;
@@ -692,6 +693,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public void onLivingUpdate()
     {
+    	
     	
     	Client.onUpdate();
     	

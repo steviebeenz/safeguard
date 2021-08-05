@@ -49,11 +49,13 @@ public class Client {
 	
 	public static String name = "SafeGuard", version = "b3.3.1";
 	public static CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList<Module>();
+	public static CopyOnWriteArrayList<Module> toggledModules = new CopyOnWriteArrayList<Module>();
 	public static HUD hud = new HUD();
 	public static CommandManager commandManager = new CommandManager();
 	public static String fullName = name + " " + version;
 	
-	private static void a(Module m) {
+	public static void a(Module m) {
+		if(modules.contains(m))return;
 		modules.add(m);
 		System.out.println("[" + Client.name + "] Loaded " + m.name);
 	}
@@ -92,6 +94,8 @@ public class Client {
 		a(new ClickTP());
 		
 		// Player
+		a(new Blink());
+		
 		a(new NoFall());
 		
 		a(new NoSlowdown());
@@ -114,6 +118,8 @@ public class Client {
 		
 		a(new Team());
 		
+		a(new PingSpoof());
+		
 		// Render
 		a(new FullBright());
 		
@@ -129,6 +135,10 @@ public class Client {
 		a(new Criticals());
 		
 		a(new AutoArmor());
+		
+		a(new AutoClicker());
+		
+		a(new AimAssist());
 		
 		// Chat
 		a(new Spammer());
@@ -267,16 +277,14 @@ public class Client {
 	}
 	
 	public static void onRender() {
-		for(Module module : Client.modules) {
-			if(!module.toggled)continue;
+		for(Module module : Client.toggledModules) {
 			module.onRender();
 		}
 	}
 	
 	public static void onTick() {
 		if(!TabGUI.openTabGUI) return;
-		for (Module module : Client.modules) {
-			if(!module.toggled) continue;
+		for (Module module : Client.toggledModules) {
 			module.onTick();
 		}
 		Waypoint.onTick();

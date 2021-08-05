@@ -29,12 +29,14 @@ public class Step extends Module {
 			
 			if(mc.thePlayer.isCollidedHorizontally && !mode.getMode().equalsIgnoreCase("AAC4")) {
 				
-				if(mode.getMode().equalsIgnoreCase("V2")) 
+				if(mode.getMode().equalsIgnoreCase("V2")) {
+					double y = mc.thePlayer.posY;
 					for(int i=0;i<height.getValue();i++) {
-						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, mc.thePlayer.onGround));
-						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.75, mc.thePlayer.posZ, mc.thePlayer.onGround));
+						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.42, mc.thePlayer.posZ, mc.thePlayer.onGround));
+						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.75, mc.thePlayer.posZ, mc.thePlayer.onGround));
+						y++;
 					}
-				else if (mode.getMode().equalsIgnoreCase("V1")) {
+				}else if (mode.getMode().equalsIgnoreCase("V1")) {
 					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.42 * (float) height.getValue()), mc.thePlayer.posZ, mc.thePlayer.onGround));
 					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.75 * (float) height.getValue()), mc.thePlayer.posZ, mc.thePlayer.onGround));
 				}

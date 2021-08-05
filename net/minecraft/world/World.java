@@ -1704,7 +1704,7 @@ public abstract class World implements IBlockAccess
                 }
                 catch (Throwable var8)
                 {
-                    var4 = CrashReport.makeCrashReport(var8, "Ticking entity");
+                    var4 = CrashReport.makeCrashReport(var8, "bad entity >:O");
                     var5 = var4.makeCategory("Entity being ticked");
                     var2.addEntityCrashInfo(var5);
                     throw new ReportedException(var4);

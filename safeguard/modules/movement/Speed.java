@@ -1,18 +1,16 @@
 package intentions.modules.movement;
 
-import org.apache.http.conn.ClientConnectionRequest;
 import org.lwjgl.input.Keyboard;
 
 import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.modules.Module;
+import intentions.modules.player.PingSpoof;
 import intentions.settings.BooleanSetting;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
-import intentions.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class Speed extends Module {
 	

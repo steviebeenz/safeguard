@@ -20,6 +20,7 @@ public class AutoTool extends Module {
 	
 	public void onUpdate()
 	{
+		if(!this.toggled)return;
 		if(Mouse.isButtonDown(0)) {
             onLeftClick();
         }

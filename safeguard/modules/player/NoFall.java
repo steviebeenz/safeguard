@@ -34,7 +34,6 @@ public class NoFall extends Module {
     if (e instanceof intentions.events.listeners.EventUpdate && 
       e.isPre()
     	&& NoFall && shouldWork) {
-    	if(mode.getMode().equalsIgnoreCase("Default")) {
 	      boolean stepEnabled = false;
 	      for(Module module : Client.modules) {
 	    	  if(module.name == "Step" && module.isEnabled()) {
@@ -45,12 +44,9 @@ public class NoFall extends Module {
 	      if (this.mc.thePlayer.fallDistance >= 2 || (this.steppatch.isEnabled() && stepEnabled)) {
 	        this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C03PacketPlayer(true));
 	      }
-    	} else if (mode.getMode().equalsIgnoreCase("ACD")) {
+    	if (mode.getMode().equalsIgnoreCase("ACD") && mc.thePlayer.motionY < 0) {
     		if(this.mc.thePlayer.fallDistance >= 2) {
     			mc.thePlayer.motionY += 0.05f;
-	    		if(this.mc.thePlayer.fallDistance >= 5 && mc.thePlayer.ticksExisted % 20 == 0) {
-	    			mc.thePlayer.motionY = 0;
-	    		}
     		}
     	}
     }

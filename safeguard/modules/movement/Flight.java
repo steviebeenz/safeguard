@@ -1,10 +1,13 @@
 package intentions.modules.movement;
 
+import java.util.ArrayList;
+
 import org.lwjgl.input.Keyboard;
 
 import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
+import intentions.events.listeners.EventPacket;
 import intentions.events.listeners.EventUpdate;
 import intentions.modules.Module;
 import intentions.modules.player.NoFall;
@@ -13,6 +16,7 @@ import intentions.settings.NumberSetting;
 import intentions.util.PlayerUtil;
 import intentions.util.Timer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
@@ -20,8 +24,6 @@ public class Flight extends Module {
 	
 	public NumberSetting flightSpeed = new NumberSetting("Speed", 1, 0.2, 4, 0.2);
 	public static ModeSetting type = new ModeSetting("Type","Vanilla", new String[] {"Glide", "Vanilla", "Redesky", "Bounce", "ACD", "AAC3", "Verus","Flappy","Hypixel","Watcher"});
-	
-	
 
 	public Flight() {
 		super("Flight", Keyboard.KEY_G, Category.MOVEMENT, "Allows you to fly like a bird", true);
@@ -32,6 +34,7 @@ public class Flight extends Module {
 	public static boolean flight;
 	private boolean Bounce;
 	private Timer timer = new Timer();
+	private double[] loc;
 	
 	public void onDisable() {
 		mc.timer.timerSpeed = 1f;
@@ -43,7 +46,20 @@ public class Flight extends Module {
 		flight = false;
 		
 		NoFall.shouldWork = true;
+		pitch = 0f;
+		yaw = 0f;
+		
+		if(type.getMode().equalsIgnoreCase("Watcher")) {
+			
+	        for (Packet packet : packets) {
+	            mc.thePlayer.sendQueue.addToSendQueue(packet);
+	        }
+	        packets.clear();
+		    
+		}
 	}
+	
+	private final ArrayList<Packet> packets = new ArrayList<>();
 	
 	public void onEnable() {
 		flight = true;
@@ -51,12 +67,31 @@ public class Flight extends Module {
 		if(type.getMode().equalsIgnoreCase("Hypixel")) {
 			pitch = 0;
 			mc.thePlayer.motionY = 3f;
+		} else if (type.getMode().equalsIgnoreCase("Watcher")) {
+			yaw = (float) (mc.thePlayer.motionX);
+			pitch = (float) (mc.thePlayer.motionZ);
+		} else if (type.getMode().equalsIgnoreCase("ACD")) {
+			mc.thePlayer.motionY = 0.75D;
 		}
 	}
 	
 	public void onUpdate() {
 		if(!type.getMode().equalsIgnoreCase("Redesky")) {
 			mc.thePlayer.speedInAir = 0.02F;
+		}
+		if(mc.thePlayer.onGround) {
+			loc = new double[]{mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ};
+		}
+	}
+	
+	public void onSendPacket(EventPacket e) {
+		if(type.getMode().equalsIgnoreCase("Watcher")) {
+			e.setCancelled(true);
+			if(e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition) {
+				packets.add(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ, mc.thePlayer.onGround));
+				return;
+			}
+			packets.add(e.getPacket());
 		}
 	}
 	
@@ -66,18 +101,7 @@ public class Flight extends Module {
 	public void onEvent(Event e) {
 		if(e instanceof EventUpdate) {
 			if(e.isPre() && this.toggled) {
-				
-				if(type.getMode().equalsIgnoreCase("Watcher")) {
-					if(mc.thePlayer.onGround) mc.thePlayer.motionY += 0.3f;
-					else {
-						for(int i=0;i<30;i++) {
-							mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
-						}
-						
-						mc.timer.timerSpeed = (float) (flightSpeed.getValue());
-					}
-					
-				}
+				if(type.getMode().equalsIgnoreCase("Watcher") || type.getMode().equalsIgnoreCase("ACD"))return;
 				
 				if(type.getMode().equalsIgnoreCase("Hypixel")) {
 					pitch++;
@@ -86,7 +110,7 @@ public class Flight extends Module {
 					
 					boolean beforeGround = mc.thePlayer.onGround;
 					
-					if(pitch < 10) {
+					if(pitch < 10 && pitch > 3) {
 						
 						mc.timer.timerSpeed = 10f;
 						mc.thePlayer.onGround = false;
@@ -101,14 +125,15 @@ public class Flight extends Module {
 						return;
 					} else {
 						mc.thePlayer.onGround = true;
+						mc.thePlayer.setPosition(mc.thePlayer.posX, (Math.floor(mc.thePlayer.posY) - yaw) + 1.3f, mc.thePlayer.posZ);
 					}
 					
 					if(pitch < 30) {
-						mc.timer.timerSpeed = 4.2f;
+						mc.timer.timerSpeed = 2.2f;
 					} else if (pitch < 80) {
-						mc.timer.timerSpeed = 2.9f;
-					} else if (pitch < 180) {
 						mc.timer.timerSpeed = 1.9f;
+					} else if (pitch < 180) {
+						mc.timer.timerSpeed = 0.9f;
 					} else if (pitch < 250) {
 						mc.timer.timerSpeed = 1f;
 						this.toggle();
@@ -171,14 +196,36 @@ public class Flight extends Module {
 			}
 		} else if (e instanceof EventMotion) {
 			if(type.getMode().equalsIgnoreCase("ACD")) {
-				mc.thePlayer.motionX *= 0.9F;
-				mc.thePlayer.motionZ *= 0.9F;
-				((EventMotion) e).setY(((EventMotion) e).getY() + 0.3);
-				mc.thePlayer.motionY -= 0.008f;
+				mc.thePlayer.motionX *= 0.7F;
+				mc.thePlayer.motionZ *= 0.7F;
+				
+				
+				double amount = -0.005000000121071935f;
+				
+				if(yaw > 0.3) {
+					amount = Math.PI - 3.14;
+					yaw = 0;
+				}
+				
+				mc.thePlayer.motionY = amount;
+				
+				mc.thePlayer.capabilities.isFlying = true;
+				mc.thePlayer.capabilities.setFlySpeed(0.05f);
+				((EventMotion) e).setY(mc.thePlayer.posY + 0.5);
+				
+				yaw += yaw - (float) mc.thePlayer.posY;
+				
 			} else if (type.getMode().equalsIgnoreCase("Flappy")) {
 				if(mc.thePlayer.onGround)return;
-				((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) - PlayerUtil.getPlayerHeight());
-				((EventMotion) e).setOnGround(false);
+				((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) - PlayerUtil.getPlayerHeight()+1);
+				((EventMotion) e).setOnGround(true);
+			} else if (type.getMode().equalsIgnoreCase("Watcher")) {
+				e.setCancelled(true);
+				mc.thePlayer.motionY = 0;
+				if(mc.thePlayer.motionX < yaw && mc.thePlayer.motionX > -yaw && mc.thePlayer.motionX != 0)
+					mc.thePlayer.motionX *= 1.1;
+				if(mc.thePlayer.motionZ < pitch && mc.thePlayer.motionZ > -pitch && mc.thePlayer.motionZ != 0)
+					mc.thePlayer.motionZ *= 1.1;
 			}
 		}
 	}
