@@ -47,7 +47,7 @@ import net.minecraft.util.Session;
 
 public class Client {
 	
-	public static String name = "SafeGuard", version = "b3.3.1";
+	public static String name = "SafeGuard", version = "b3.3.2";
 	public static CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList<Module>();
 	public static CopyOnWriteArrayList<Module> toggledModules = new CopyOnWriteArrayList<Module>();
 	public static HUD hud = new HUD();
