@@ -42,7 +42,7 @@ public class AutoClicker extends Module {
 	}
 	
 	public void swing() {
-		if(timer.hasTimeElapsed((long) (1000.0D / speed.getValue()), true)) {
+		if(timer.hasTimeElapsed((long) (1000.0D / speed.getValue() + (Math.floor(Math.random() * 20) - 10)), true)) {
 			
 			mc.thePlayer.swingItem();
 			

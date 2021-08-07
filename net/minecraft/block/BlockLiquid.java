@@ -125,7 +125,10 @@ public abstract class BlockLiquid extends Block
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
     {
     	Minecraft mc = Minecraft.getMinecraft();
-    	if(Jesus.jesus && !mc.thePlayer.isInLiquid && !mc.thePlayer.isSneaking() && Jesus.mode.getMode() != "NCP") {
+    	if(Jesus.jesus && !mc.thePlayer.isInLiquid && !mc.thePlayer.isSneaking() && !Jesus.mode.getMode().equalsIgnoreCase("NCP")) {
+    		if(Jesus.mode.getMode().equalsIgnoreCase("ACD") && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 2, mc.thePlayer.posZ)).getBlock() != Blocks.water) {
+    			return null;
+    		}
     		return AxisAlignedBB.fromBounds(
     				pos.getX() + this.minX,
     				pos.getY() + 1 + this.minY,

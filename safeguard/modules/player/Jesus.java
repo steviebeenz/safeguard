@@ -2,12 +2,17 @@ package intentions.modules.player;
 
 import org.lwjgl.input.Keyboard;
 
+import com.mojang.realmsclient.dto.RealmsServer.McoServerComparator;
+
+import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.events.listeners.EventUpdate;
 import intentions.modules.Module;
 import intentions.settings.ModeSetting;
 import intentions.util.BlockUtils;
+import intentions.util.PlayerUtil;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
@@ -32,10 +37,9 @@ public class Jesus extends Module {
 	  if(e instanceof EventUpdate) {
 		  try {
 			  if(mode.getMode().equalsIgnoreCase("ACD")) {
-				  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0958195819595185918, mc.thePlayer.posZ, false));
-				  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
+				//this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ, false));
 			  }
-			  if(BlockUtils.isLiquidBlock(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ)).getBlock())) {
+			  if(BlockUtils.isLiquidBlock(PlayerUtil.getBlockAt())) {
 			    mc.thePlayer.motionY += 0F + ((mode.getMode().equalsIgnoreCase("NCP")) ? 0.5F : (mc.thePlayer.isSneaking()) ? 0F : 0.05F);
 			    if (!mode.getMode().equalsIgnoreCase("NCP")) return;
 			    mc.thePlayer.motionY = Math.min(mc.thePlayer.motionY, 0.25F);
@@ -45,10 +49,18 @@ public class Jesus extends Module {
 
 		  }
 	  } else if (e instanceof EventMotion) {
-			//pitch = mc.thePlayer.rotationPitch;
-			//yaw = mc.thePlayer.rotationYaw;
-			((EventMotion) e).setPitch(50);
-			((EventMotion) e).setYaw(50);
+		  if(mode.getMode().equalsIgnoreCase("ACD")) {
+			  
+			  double upVal = 0.1f;
+			  
+			  if(mc.thePlayer.isInLiquid || mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.3, mc.thePlayer.posZ)).getBlock() != Blocks.water) return;
+			  
+			  if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 2, mc.thePlayer.posZ)).getBlock() != Blocks.water) {
+				  upVal = -0.1f;
+			  }
+			  
+			  ((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) - (1 + mc.thePlayer.ticksExisted % 2 == 0 ? 0 : upVal));
+		  }
 	  }
   }
 }

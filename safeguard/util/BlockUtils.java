@@ -9,6 +9,7 @@ import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockIce;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockPackedIce;
@@ -436,5 +437,32 @@ public class BlockUtils {
 
 	public static boolean isLiquidBlock(Block block) {
 		return block == Blocks.water || block == Blocks.lava || block == Blocks.flowing_water || block == Blocks.flowing_lava;
+	}
+
+	public static boolean isNotSolid(Block b) {
+		return b != Blocks.grass && !(b instanceof BlockFlower) && b != Blocks.tallgrass;
+	}
+
+	public static Block[] getBlocksBelow() {
+		Block[] blocks = new Block[9];
+		
+		double expand = 0.3;
+		int runs = 0;
+		
+		for(double x=-expand;x<=expand;x+=expand) {
+			for(double z=-expand;z<=expand;z+=expand) {
+				try {
+					Block b = mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX + x, mc.thePlayer.posY - 0.5001, mc.thePlayer.posZ + z)).getBlock();
+					if(b != null) {
+						blocks[runs] = b;
+						runs++;
+					}
+				} catch(NullPointerException e) {
+					
+				}
+			}
+		}
+		
+		return blocks;
 	}
 }

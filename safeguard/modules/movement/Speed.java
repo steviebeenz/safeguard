@@ -17,7 +17,7 @@ public class Speed extends Module {
 	public static BooleanSetting waitOnGround = new BooleanSetting("Ground", true);
 	public static NumberSetting movementSpeed = new NumberSetting("Speed", 1.4, 1.1, 1.5, 0.05);
 	public static BooleanSetting jump = new BooleanSetting("Jump", true);
-	public static ModeSetting bypass = new ModeSetting("Mode", "None", new String[] {"Default", "Panda","Strafe"});
+	public static ModeSetting bypass = new ModeSetting("Mode", "None", new String[] {"Default", "Spartan","Strafe","ACD"});
 
 	public Speed() {
 		super("Speed", Keyboard.KEY_Y, Category.MOVEMENT, "Makes you go faster", true);
@@ -43,7 +43,20 @@ public class Speed extends Module {
 			return;
 		} else if(this.toggled) {
 			if((mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) && !mc.thePlayer.isSneaking()) {
-				if (bypass.getMode().equalsIgnoreCase("Strafe")) {
+				if(bypass.getMode().equalsIgnoreCase("Spartan")) {
+					if(mc.thePlayer.onGround && jump.isEnabled()) mc.thePlayer.jump();
+					mc.thePlayer.motionX *= 1.1f;
+		    		mc.thePlayer.motionZ *= 1.1f;
+					mc.thePlayer.onGround = true;
+					return;
+				}
+				else if (bypass.getMode().equalsIgnoreCase("ACD")) {
+					if(!mc.thePlayer.onGround)return;
+					mc.thePlayer.motionX *= movementSpeed.getValue();
+		    		mc.thePlayer.motionZ *= movementSpeed.getValue();
+					mc.thePlayer.onGround = true;
+				}
+				else if (bypass.getMode().equalsIgnoreCase("Strafe")) {
 					if(mc.thePlayer.onGround && jump.isEnabled()) mc.thePlayer.jump();
 					mc.thePlayer.motionX *= movementSpeed.getValue();
 		    		mc.thePlayer.motionZ *= movementSpeed.getValue();
@@ -63,9 +76,6 @@ public class Speed extends Module {
 						mc.thePlayer.motionX *= movementSpeed.getValue();
 			    		mc.thePlayer.motionZ *= movementSpeed.getValue();
 					}
-				}
-				if(bypass.getMode().equalsIgnoreCase("Panda") && mc.thePlayer.motionY > 0) {
-					mc.thePlayer.motionY -= 0.1;
 				}
 			} 
 		}

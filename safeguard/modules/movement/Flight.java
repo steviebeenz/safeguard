@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition;
 
 public class Flight extends Module {
 	
@@ -85,7 +86,11 @@ public class Flight extends Module {
 	}
 	
 	public void onSendPacket(EventPacket e) {
-		if(type.getMode().equalsIgnoreCase("Watcher")) {
+		if(mc.theWorld == null || mc.thePlayer == null || mc.thePlayer.onGround)return;
+		if(type.getMode().equalsIgnoreCase("ACD")) {
+			e.setCancelled(mc.thePlayer.ticksExisted % 2 == 0);
+		}
+		else if(type.getMode().equalsIgnoreCase("Watcher")) {
 			e.setCancelled(true);
 			if(e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition) {
 				packets.add(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ, mc.thePlayer.onGround));
@@ -101,7 +106,16 @@ public class Flight extends Module {
 	public void onEvent(Event e) {
 		if(e instanceof EventUpdate) {
 			if(e.isPre() && this.toggled) {
-				if(type.getMode().equalsIgnoreCase("Watcher") || type.getMode().equalsIgnoreCase("ACD"))return;
+				
+				if(type.getMode().equalsIgnoreCase("ACD")) {
+					if(mc.thePlayer.onGround)return;
+					
+					mc.thePlayer.motionY = -0.051;
+					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.051, mc.thePlayer.posZ, mc.thePlayer.onGround));
+					return;
+				}
+				
+				if(type.getMode().equalsIgnoreCase("Watcher"))return;
 				
 				if(type.getMode().equalsIgnoreCase("Hypixel")) {
 					pitch++;
@@ -199,21 +213,7 @@ public class Flight extends Module {
 				mc.thePlayer.motionX *= 0.7F;
 				mc.thePlayer.motionZ *= 0.7F;
 				
-				
-				double amount = -0.005000000121071935f;
-				
-				if(yaw > 0.3) {
-					amount = Math.PI - 3.14;
-					yaw = 0;
-				}
-				
-				mc.thePlayer.motionY = amount;
-				
-				mc.thePlayer.capabilities.isFlying = true;
-				mc.thePlayer.capabilities.setFlySpeed(0.05f);
-				((EventMotion) e).setY(mc.thePlayer.posY + 0.5);
-				
-				yaw += yaw - (float) mc.thePlayer.posY;
+				e.setCancelled(mc.thePlayer.ticksExisted % 2 == 0);
 				
 			} else if (type.getMode().equalsIgnoreCase("Flappy")) {
 				if(mc.thePlayer.onGround)return;

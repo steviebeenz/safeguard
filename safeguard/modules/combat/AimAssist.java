@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import intentions.Client;
 import intentions.modules.Module;
 import intentions.modules.player.AutoSoup;
 import intentions.settings.ModeSetting;
@@ -69,6 +70,7 @@ public class AimAssist extends Module {
         if(target == null || target.isDead)return;
         
         float[] rotations = getRotations(target);
+        float[] cRotations = new float[] {mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch};
         
         if(move.getMode().equalsIgnoreCase("Instant")) {
         	mc.thePlayer.rotationYaw = rotations[0];
@@ -76,33 +78,34 @@ public class AimAssist extends Module {
         	return;
         }
         
-        if(
-        		rotations[0] > mc.thePlayer.rotationYaw + 180 ||
-        		rotations[0] > mc.thePlayer.rotationYaw - 180 ||
-        		rotations[1] > mc.thePlayer.rotationPitch - 180 ||
-        		rotations[1] > mc.thePlayer.rotationPitch - 180)
+        rotations[0] -= 180;
+        rotations[1] -= 180;
+        cRotations[0] -= 180;
+        cRotations[1] -= 180;
         
-        if(rotations[0] > mc.thePlayer.rotationYaw) 
-        	if(mc.thePlayer.rotationYaw + turnSpeed.getValue() > rotations[0]) 
-        		mc.thePlayer.rotationYaw = rotations[0];
+        Client.addChatMessage(cRotations[0] + " - " + rotations[0]);
+        
+        if(rotations[0] > cRotations[0]) 
+        	if(cRotations[0] + turnSpeed.getValue() > rotations[0]) 
+        		mc.thePlayer.rotationYaw = rotations[0]+180;
         	else 
         		mc.thePlayer.rotationYaw += turnSpeed.getValue();
         	
-         else if(rotations[0] < mc.thePlayer.rotationYaw) 
-        	 if(mc.thePlayer.rotationYaw - turnSpeed.getValue() > rotations[0]) 
-         		mc.thePlayer.rotationYaw = rotations[0];
+         else if(rotations[0] < cRotations[0]) 
+        	 if(cRotations[0] - turnSpeed.getValue() > rotations[0]) 
+         		mc.thePlayer.rotationYaw = rotations[0]+180;
          	 else 
          		mc.thePlayer.rotationYaw -= turnSpeed.getValue();
         
-        if(rotations[1] > mc.thePlayer.rotationPitch) 
-        	if(mc.thePlayer.rotationPitch + turnSpeed.getValue() > rotations[1]) 
-        		mc.thePlayer.rotationPitch = rotations[1];
+        if(rotations[1] > cRotations[1]) 
+        	if(cRotations[1] + turnSpeed.getValue() > rotations[1]) 
+        		mc.thePlayer.rotationPitch = rotations[1]+180;
         	else 
         		mc.thePlayer.rotationPitch += turnSpeed.getValue();
         	
-         else if(rotations[1] < mc.thePlayer.rotationPitch) 
-        	 if(mc.thePlayer.rotationPitch - turnSpeed.getValue() > rotations[1]) 
-         		mc.thePlayer.rotationPitch = rotations[1];
+         else if(rotations[1] < cRotations[1]) 
+        	 if(cRotations[1] - turnSpeed.getValue() > rotations[1]) 
+         		mc.thePlayer.rotationPitch = rotations[1]+180;
          	 else 
          		mc.thePlayer.rotationPitch -= turnSpeed.getValue();
         

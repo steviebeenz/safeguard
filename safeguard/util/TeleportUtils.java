@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.util.BlockPos;
@@ -94,6 +95,10 @@ public class TeleportUtils {
 	
 	public static Vec3 getVec3(BlockPos blockPos) {
 		return new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	}
+	
+	public static boolean isValidTeleport(BlockPos blockPos) {
+		return BlockUtils.getBlockUnderPlayer(mc.thePlayer, 1) == Blocks.air;
 	}
 	
 }

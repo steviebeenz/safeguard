@@ -8,7 +8,11 @@ public class Start
 {
     public static void main(String[] args)
     {
-    	Main.main(concat(new String[] {"--version", "1.8", "--accessToken", "0", "--assetsDir", "assets", "--assetIndex", "1.8", "--userProperties", "{}"}, args));
+    	try {
+    		Main.main(concat(new String[] {"--version", "1.8", "--accessToken", "0", "--assetsDir", "assets", "--assetIndex", "1.8", "--userProperties", "{}"}, args));
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
     public static <T> T[] concat(T[] first, T[] second)
