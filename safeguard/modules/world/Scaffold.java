@@ -210,10 +210,7 @@ public class Scaffold extends Module {
     		float pitch = (float) -(Math.atan2(var8, var14) * 180.0D / Math.PI) - 90.0F;
 			
 			
-			if(face == EnumFacing.UP) {
-				yaw = -0f;
-				pitch = -90f;
-			}
+			pitch = -90f;
 			
 			mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, -yaw, -pitch, mc.thePlayer.onGround));
     	
