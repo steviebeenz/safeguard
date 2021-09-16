@@ -17,7 +17,7 @@ public class PlayerUtil {
 	public static int getPlayerHeight() {
 		int yHeight = (int)Math.floor(mc.thePlayer.posY);
 		int height = 0;
-		while(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yHeight, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+		while(!mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yHeight, mc.thePlayer.posZ)).getBlock().isSolidFullCube()) {
 			height++;
 			yHeight--;
 			if(height > Math.floor(mc.thePlayer.posY)) {
@@ -45,9 +45,11 @@ public class PlayerUtil {
 	public static double getPlayerHeightDouble() {
 		double yHeight = (Math.floor(mc.thePlayer.posY * 10)) / 10;
 		double height = 0;
-		while(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yHeight, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+		double depth = 80;
+		while(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, yHeight, mc.thePlayer.posZ)).getBlock() == Blocks.air && depth > 0) {
 			height += 0.1;
 			yHeight -= 0.1;
+			depth--; // Prevent crashing above void (for speed)
 		}
 		return height;
 	}

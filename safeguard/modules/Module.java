@@ -5,14 +5,16 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventPacket;
 import intentions.settings.KeybindSetting;
 import intentions.settings.Setting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.Packet;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.AxisAlignedBB;
 
 public class Module {
 
@@ -97,5 +99,17 @@ public class Module {
 	public void onRightClick() { }
  
 	public void onSendPacket(EventPacket eventPacket) { }
+
+	public void onLateUpdate() {}
+	
+	public void onBB(AxisAlignedBB bb) {}
+	
+	public boolean isMovingKB() {
+		return (keyDown(mc.gameSettings.keyBindForward) && !keyDown(mc.gameSettings.keyBindBack)) || (keyDown(mc.gameSettings.keyBindBack) && !keyDown(mc.gameSettings.keyBindForward)) || keyDown(mc.gameSettings.keyBindRight) || keyDown(mc.gameSettings.keyBindLeft);
+	}
+	
+	public boolean keyDown(KeyBinding kb) {
+		return Keyboard.isKeyDown(kb.getKeyCode());
+	}
 	
 }

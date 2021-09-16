@@ -1,9 +1,6 @@
 
 package intentions.modules.render;
 
-import java.awt.Color;
-import java.nio.file.FileSystemNotFoundException;
-import java.security.KeyRep;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -16,9 +13,12 @@ import intentions.events.listeners.EventKey;
 import intentions.events.listeners.EventRenderGUI;
 import intentions.events.listeners.EventUpdate;
 import intentions.modules.Module;
-import intentions.modules.movement.Flight;
 import intentions.modules.world.ChestStealer;
-import intentions.settings.*;
+import intentions.settings.BooleanSetting;
+import intentions.settings.KeybindSetting;
+import intentions.settings.ModeSetting;
+import intentions.settings.NumberSetting;
+import intentions.settings.Setting;
 import intentions.ui.GuiDescription;
 import intentions.ui.GuiSpamText;
 import intentions.ui.GuiWatermark;
@@ -248,18 +248,21 @@ public class TabGUI extends Module {
 							
 						} else {
 							module = modules.get(category.moduleIndex);
-							if (module.name.equals("TabGUI") || module == null || module.name.equals("ChestStealer"))return;
+							if (module.name.equals("TabGUI") || module == null || module.name.equals("ChestStealer") || module.name.equals("ClickGui"))return;
 							module.toggle();
 						}
 					}
 				}else
 					expanded = true;
 			}
-			if(code == Keyboard.KEY_RSHIFT) {
+			if(code == Keyboard.KEY_LCONTROL) {
 				if(expanded && modules.size() != 0) {
 					Module module = modules.get(category.moduleIndex);
 					mc.displayGuiScreen(new GuiDescription(module.description, module.name));
 				}
+			}
+			if(code == Keyboard.KEY_RSHIFT) {
+				ClickGui.enable = true;
 			}
 			
 			if(code == Keyboard.KEY_RIGHT) {

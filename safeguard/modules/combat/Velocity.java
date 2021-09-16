@@ -2,10 +2,12 @@ package intentions.modules.combat;
 
 import org.lwjgl.input.Keyboard;
 
-import intentions.Client;
 import intentions.modules.Module;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
+import intentions.util.TeleportUtils;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 public class Velocity extends Module {
 	
@@ -41,6 +43,8 @@ public class Velocity extends Module {
 			mc.thePlayer.motionX *= h;
 			mc.thePlayer.motionY *= v;
 			
+			TeleportUtils.pathFinderTeleportTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ), TeleportUtils.getVec3(new BlockPos(mc.thePlayer.posX + 1, mc.thePlayer.posY + 1, mc.thePlayer.posZ + 1)));
+			TeleportUtils.pathFinderTeleportTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ), TeleportUtils.getVec3(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ - 1)));
 		}
 	}
 }

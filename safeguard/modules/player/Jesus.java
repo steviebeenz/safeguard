@@ -51,15 +51,10 @@ public class Jesus extends Module {
 	  } else if (e instanceof EventMotion) {
 		  if(mode.getMode().equalsIgnoreCase("ACD")) {
 			  
-			  double upVal = 0.1f;
-			  
 			  if(mc.thePlayer.isInLiquid || mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.3, mc.thePlayer.posZ)).getBlock() != Blocks.water) return;
 			  
-			  if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 2, mc.thePlayer.posZ)).getBlock() != Blocks.water) {
-				  upVal = -0.1f;
-			  }
-			  
-			  ((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) - (1 + mc.thePlayer.ticksExisted % 2 == 0 ? 0 : upVal));
+			  ((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) + (mc.thePlayer.ticksExisted % 2 == 0 ? -0.1 : -0.2));
+			  ((EventMotion) e).setOnGround(mc.thePlayer.ticksExisted % 2 != 0);
 		  }
 	  }
   }

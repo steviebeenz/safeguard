@@ -156,6 +156,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
             {
                 this.func_175161_p();
             }
+            
+            Client.onLateUpdate();
         }
     }
 
@@ -404,7 +406,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public String getClientBrand()
     {
-        return "Hey Vsauce Michael here";
+        return "cac best ac";
     }
 
     public StatFileWriter getStatFileWriter()

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 public class RotationUtils {
    private static Minecraft mc = Minecraft.getMinecraft();
@@ -24,6 +25,26 @@ public class RotationUtils {
       return new float[]{var20, var21};
    }
 
+	/**
+	 * 
+	 * @param vec
+	 * @return index 0 = yaw | index 1 = pitch
+	 */
+	public static float[] getFacePos(Vec3 vec) {
+		double diffX = vec.xCoord + 0.5 - Minecraft.getMinecraft().thePlayer.posX;
+		double diffY = vec.yCoord + 0.5
+				- (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight());
+		double diffZ = vec.zCoord + 0.5 - Minecraft.getMinecraft().thePlayer.posZ;
+		double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+		float yaw = (float) (Math.atan2(diffZ, diffX) * 180.0D / Math.PI) - 90.0F;
+		float pitch = (float) -(Math.atan2(diffY, dist) * 180.0D / Math.PI);
+		return new float[] {
+				Minecraft.getMinecraft().thePlayer.rotationYaw
+						+ MathHelper.wrapAngleTo180_float(yaw - Minecraft.getMinecraft().thePlayer.rotationYaw),
+				Minecraft.getMinecraft().thePlayer.rotationPitch
+						+ MathHelper.wrapAngleTo180_float(pitch - Minecraft.getMinecraft().thePlayer.rotationPitch) };
+	}
+   
    public static float[] getRotations(EntityLivingBase var0) {
       double var1 = var0.posX;
       double var3 = var0.posY + (double)(var0.getEyeHeight() / 2.0F);

@@ -39,7 +39,7 @@ public class HUD {
 		int count = 0;
 	
 		for(Module m : Client.modules) {
-			if(!m.toggled || m.name.equals("TabGUI"))
+			if(!m.toggled || m.name.equals("TabGUI") || m.name.equals("ClickGui"))
 				continue;
 			
 			double offset = count*(fr.FONT_HEIGHT + 6);

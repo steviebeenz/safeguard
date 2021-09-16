@@ -2,10 +2,10 @@ package intentions.util;
 
 import java.util.ArrayList;
 
+import intentions.modules.movement.ClickTP;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.util.BlockPos;
@@ -80,7 +80,14 @@ public class TeleportUtils {
 		}
 		for(Node node : processor.path) {
 			BlockPos pos = node.getBlockpos();
-			mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(node.getBlockpos().getX() + 0.5, node.getBlockpos().getY(), node.getBlockpos().getZ() + 0.5, true));
+			if(ClickTP.mode.getMode().equalsIgnoreCase("ACD")) {
+				for(int i=0;i<100;i++) 
+				{
+					mc.thePlayer.setPosition((node.getBlockpos().getX() - 1 + (0.01 * i)) + 0.5, node.getBlockpos().getY() + 1, (node.getBlockpos().getZ() - 1 + (0.01 * i)) + 0.5);
+				}
+			} else {
+				mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, false));
+			}
 			positions.add((lastPos = new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)));
 		}
 		if (sneaking) {
@@ -98,7 +105,8 @@ public class TeleportUtils {
 	}
 	
 	public static boolean isValidTeleport(BlockPos blockPos) {
-		return BlockUtils.getBlockUnderPlayer(mc.thePlayer, 1) == Blocks.air;
+		return true;
+		//return BlockUtils.getBlockUnderPlayer(mc.thePlayer, 1) == Blocks.air;
 	}
 	
 }

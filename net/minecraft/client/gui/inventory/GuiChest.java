@@ -79,7 +79,7 @@ public class GuiChest extends GuiContainer
     			buttonList.add(new GuiButton(2, width/2+10, posY, 40, 12, "Store"));
     		}
     		
-    		if(ChestStealer.autoSteal.isEnabled() && TabGUI.openTabGUI) {
+    		if(TabGUI.openTabGUI && ChestStealer.autoSteal.isEnabled()) {
             	new Thread(new Runnable() {
         			@Override
         			public void run() {
@@ -102,8 +102,7 @@ public class GuiChest extends GuiContainer
         					e.printStackTrace();
         				}
         			}
-        		})
-        		.start();
+        		}).start();
             }
     }
     
@@ -154,7 +153,7 @@ public class GuiChest extends GuiContainer
     				}
     			}
     		})
-    		.start();;
+    		.start();
     	}
     }
 }

@@ -1,16 +1,29 @@
 package net.minecraft.util;
 
+import intentions.Client;
+
 public class AxisAlignedBB
 {
-    public final double minX;
-    public final double minY;
-    public final double minZ;
-    public final double maxX;
-    public final double maxY;
-    public final double maxZ;
+    public double minX;
+    public double minY;
+    public double minZ;
+    public double maxX;
+    public double maxY;
+    public double maxZ;
     private static final String __OBFID = "CL_00000607";
 
     public AxisAlignedBB(double x1, double y1, double z1, double x2, double y2, double z2)
+    {
+        this.minX = Math.min(x1, x2);
+        this.minY = Math.min(y1, y2);
+        this.minZ = Math.min(z1, z2);
+        this.maxX = Math.max(x1, x2);
+        this.maxY = Math.max(y1, y2);
+        this.maxZ = Math.max(z1, z2);
+        Client.onBB(this);
+    }
+    
+    public AxisAlignedBB(double x1, double y1, double z1, double x2, double y2, double z2, double m)
     {
         this.minX = Math.min(x1, x2);
         this.minY = Math.min(y1, y2);
@@ -28,6 +41,7 @@ public class AxisAlignedBB
         this.maxX = (double)p_i45554_2_.getX();
         this.maxY = (double)p_i45554_2_.getY();
         this.maxZ = (double)p_i45554_2_.getZ();
+        Client.onBB(this);
     }
 
     /**
@@ -109,7 +123,7 @@ public class AxisAlignedBB
         double var18 = Math.max(p_178781_0_, p_178781_6_);
         double var20 = Math.max(p_178781_2_, p_178781_8_);
         double var22 = Math.max(p_178781_4_, p_178781_10_);
-        return new AxisAlignedBB(var12, var14, var16, var18, var20, var22);
+        return new AxisAlignedBB(var12, var14, var16, var18, var20, var22, 0);
     }
 
     /**
@@ -411,4 +425,32 @@ public class AxisAlignedBB
     {
         return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
     }
+
+	public void setBoundingBox(AxisAlignedBB fromBounds) {
+		this.minX = fromBounds.minX;
+		this.minY = fromBounds.minY;
+		this.minZ = fromBounds.minZ;
+		this.maxX = fromBounds.maxX;
+		this.maxY = fromBounds.maxY;
+		this.maxZ = fromBounds.maxZ;
+	}
+	
+	public void setBoundingBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		this.minX = minX;
+		this.minY = minY;
+		this.minZ = minZ;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		this.maxZ = maxZ;
+	}
+	
+	public void setBoundingBox(Vec3 min, Vec3 max) {
+		this.minX = min.xCoord;
+		this.minY = min.yCoord;
+		this.minZ = min.zCoord;
+		this.maxX = max.xCoord;
+		this.maxY = max.yCoord;
+		this.maxZ = max.zCoord;
+	}
+	
 }

@@ -6,6 +6,7 @@ import intentions.events.listeners.EventUpdate;
 import intentions.modules.Module;
 import intentions.settings.NumberSetting;
 import intentions.util.Timer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemArmor;
@@ -26,8 +27,8 @@ public class AutoArmor extends Module {
       this.addSettings(this.DelayArmor);
    }
 
-   public boolean isChestInventory() {
-      return this.mc.thePlayer.openContainer != null && this.mc.thePlayer.openContainer instanceof ContainerChest;
+   public static boolean isChestInventory() {
+      return Minecraft.getMinecraft().thePlayer.openContainer != null && Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest;
    }
 
    public static int checkProtection(ItemStack var0) {

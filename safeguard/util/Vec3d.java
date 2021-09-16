@@ -1,5 +1,7 @@
 package intentions.util;
 
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
 
 public class Vec3d {
@@ -19,6 +21,7 @@ public class Vec3d {
    public String toString() {
       return String.valueOf((new StringBuilder("(")).append(this.xCoord).append(", ").append(this.yCoord).append(", ").append(this.zCoord).append(")"));
    }
+   
 
    public boolean equals(Object var1) {
       if (this == var1) {
@@ -93,4 +96,12 @@ public class Vec3d {
    public Vec3d scale(double var1) {
       return new Vec3d(this.xCoord * var1, this.yCoord * var1, this.zCoord * var1);
    }
+
+   public Vec3 getAsVec3() {
+		return new Vec3(this.xCoord, this.yCoord, this.zCoord);
+	}
+
+   public Vec3d add(double range, double i, double range2) {
+		return this.add(new Vec3d(range, i, range2));
+	}
 }

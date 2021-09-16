@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.lwjgl.input.Keyboard;
+
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.modules.Module;
@@ -30,14 +32,16 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 public class KillAura extends Module {
   public Timer timer = new Timer();
   
-  public NumberSetting range = new NumberSetting("Range", 4.0D, 1.0D, 6.0D, 0.1D), cps = new NumberSetting("CPS", 10.0D, 1.0D, 20.0D, 1.0D);
+  public static NumberSetting range = new NumberSetting("Range", 4.0D, 1.0D, 6.0D, 0.1D);
+
+  public static NumberSetting cps = new NumberSetting("CPS", 10.0D, 1.0D, 20.0D, 1.0D);
   
-  public BooleanSetting noSwing = new BooleanSetting("No Swing", false), death = new BooleanSetting("Death", true), invisibles = new BooleanSetting("Invisibles", true), esp = new BooleanSetting("ESP", true);
+  public static BooleanSetting noSwing = new BooleanSetting("No Swing", false), death = new BooleanSetting("Death", true), invisibles = new BooleanSetting("Invisibles", true), esp = new BooleanSetting("ESP", true);
   
-  public ModeSetting sort = new ModeSetting("Sort", "Closest", new String[] { "Furthest", "Health", "Closest" }), rotation = new ModeSetting("Rotation", "Server", new String[] { "Client", "Server" }), priority = new ModeSetting("Priority", "Passive", new String[] { "Passive", "None", "Mobs", "Players" });
+  public static ModeSetting sort = new ModeSetting("Sort", "Closest", new String[] { "Furthest", "Health", "Closest" }), rotation = new ModeSetting("Rotation", "Server", new String[] { "Client", "Server" }), priority = new ModeSetting("Priority", "Passive", new String[] { "Passive", "None", "Mobs", "Players" });
   
   public KillAura() {
-    super("KillAura", 45, Module.Category.COMBAT, "Attacks entities around you", true);
+    super("KillAura", Keyboard.KEY_V, Module.Category.COMBAT, "Attacks entities around you", true);
     addSettings(new Setting[] { (Setting)this.range, (Setting)this.cps, (Setting)this.sort, (Setting)this.noSwing, (Setting)this.rotation, (Setting)this.priority, (Setting)this.invisibles, (Setting)this.death, (Setting)this.esp });
   }
 
@@ -93,10 +97,22 @@ public class KillAura extends Module {
         targets.sort(Comparator.comparingDouble(entity -> entity.getDistanceToEntity((Entity)this.mc.thePlayer)));
       } else if (this.sort.getMode() == "Furthest") {
         targets.sort(Comparator.<EntityLivingBase>comparingDouble(entity -> ((EntityLivingBase)entity).getDistanceToEntity((Entity)this.mc.thePlayer)).reversed());
+      } else if (this.sort.getMode() == "Health") {
+          targets.sort(Comparator.<EntityLivingBase>comparingDouble(entity -> ((EntityLivingBase)entity).getHealth()));
       } 
       targets = PlayerUtil.removeNotNeeded(targets);
       if (!targets.isEmpty()) {
         EntityLivingBase target = targets.get(0);
+        
+        if (this.rotation.getMode() == "Server") {
+        	if(mc.objectMouseOver.entityHit != target && mc.thePlayer.getDistanceToEntity(target) > 0.1) {
+            	event.setYaw((float) ((float) getRotations((Entity)target)[0]) + (float)(Math.random()));
+            	event.setPitch((float) ((float) getRotations((Entity)target)[1]) + (float)(Math.random()));
+        	}
+        } else {
+            this.mc.thePlayer.rotationYaw = getRotations((Entity)target)[0] + (float)(Math.random());
+            this.mc.thePlayer.rotationPitch = getRotations((Entity)target)[1] + (float)(Math.random());
+        } 
         
         this.target = target;
         timeSinceLastAtk = 0;
@@ -104,13 +120,7 @@ public class KillAura extends Module {
         
           if(!invisibles.isEnabled() && target.isInvisible()) return;
         
-          if (this.rotation.getMode() == "Server") {
-              event.setYaw((float) ((float) getRotations((Entity)target)[0] + Math.floor(Math.random() * 10)));
-              event.setPitch((float) (getRotations((Entity)target)[1] + Math.floor(Math.random() * 10)));
-            } else {
-              this.mc.thePlayer.rotationYaw = getRotations((Entity)target)[0];
-              this.mc.thePlayer.rotationPitch = getRotations((Entity)target)[1];
-            } 
+          
           
           if (this.noSwing.isEnabled()) {
             this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C0APacketAnimation());
@@ -119,14 +129,13 @@ public class KillAura extends Module {
           } 
           
           if(Criticals.c) {
-        	  
-        	  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.2958195819595185918, mc.thePlayer.posZ, false));
-        	  this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
-         
+        	  double x = mc.thePlayer.posX, y = mc.thePlayer.posY, z = mc.thePlayer.posZ;
+              mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.11, z, false));
+              mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.1100013579, z, false));
+              mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.0000013579, z, false));
           }
-          
-          
           this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C02PacketUseEntity((Entity)target, C02PacketUseEntity.Action.ATTACK));
+          
         } 
       } 
     } 

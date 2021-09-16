@@ -1,5 +1,8 @@
 package net.minecraft.util;
 
+import intentions.util.Vec3d;
+import net.minecraft.entity.Entity;
+
 public class Vec3
 {
     /** X coordinate of Vec3D */
@@ -205,4 +208,5 @@ public class Vec3
         double var8 = this.zCoord * (double)var2 - this.xCoord * (double)var3;
         return new Vec3(var4, var6, var8);
     }
+
 }

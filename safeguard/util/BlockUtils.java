@@ -28,6 +28,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import optifine.Reflector;
 import optifine.ReflectorClass;
 import optifine.ReflectorMethod;
@@ -441,6 +442,10 @@ public class BlockUtils {
 
 	public static boolean isNotSolid(Block b) {
 		return b != Blocks.grass && !(b instanceof BlockFlower) && b != Blocks.tallgrass;
+	}
+	
+	public static Vec3 getVec3(BlockPos blockPos) {
+		return new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
 	public static Block[] getBlocksBelow() {

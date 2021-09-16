@@ -659,121 +659,100 @@ public class Block
      * @param start The start vector
      * @param end The end vector
      */
-    public MovingObjectPosition collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end)
-    {
-        this.setBlockBoundsBasedOnState(worldIn, pos);
-        start = start.addVector((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()));
-        end = end.addVector((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()));
-        Vec3 var5 = start.getIntermediateWithXValue(end, this.minX);
-        Vec3 var6 = start.getIntermediateWithXValue(end, this.maxX);
-        Vec3 var7 = start.getIntermediateWithYValue(end, this.minY);
-        Vec3 var8 = start.getIntermediateWithYValue(end, this.maxY);
-        Vec3 var9 = start.getIntermediateWithZValue(end, this.minZ);
-        Vec3 var10 = start.getIntermediateWithZValue(end, this.maxZ);
+	public MovingObjectPosition collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end) {
+		this.setBlockBoundsBasedOnState(worldIn, pos);
+		start = start.addVector((double) (-pos.getX()), (double) (-pos.getY()), (double) (-pos.getZ()));
+		end = end.addVector((double) (-pos.getX()), (double) (-pos.getY()), (double) (-pos.getZ()));
+		Vec3 vec3 = start.getIntermediateWithXValue(end, this.minX);
+		Vec3 vec31 = start.getIntermediateWithXValue(end, this.maxX);
+		Vec3 vec32 = start.getIntermediateWithYValue(end, this.minY);
+		Vec3 vec33 = start.getIntermediateWithYValue(end, this.maxY);
+		Vec3 vec34 = start.getIntermediateWithZValue(end, this.minZ);
+		Vec3 vec35 = start.getIntermediateWithZValue(end, this.maxZ);
 
-        if (!this.isVecInsideYZBounds(var5))
-        {
-            var5 = null;
-        }
+		if (!this.isVecInsideYZBounds(vec3)) {
+			vec3 = null;
+		}
 
-        if (!this.isVecInsideYZBounds(var6))
-        {
-            var6 = null;
-        }
+		if (!this.isVecInsideYZBounds(vec31)) {
+			vec31 = null;
+		}
 
-        if (!this.isVecInsideXZBounds(var7))
-        {
-            var7 = null;
-        }
+		if (!this.isVecInsideXZBounds(vec32)) {
+			vec32 = null;
+		}
 
-        if (!this.isVecInsideXZBounds(var8))
-        {
-            var8 = null;
-        }
+		if (!this.isVecInsideXZBounds(vec33)) {
+			vec33 = null;
+		}
 
-        if (!this.isVecInsideXYBounds(var9))
-        {
-            var9 = null;
-        }
+		if (!this.isVecInsideXYBounds(vec34)) {
+			vec34 = null;
+		}
 
-        if (!this.isVecInsideXYBounds(var10))
-        {
-            var10 = null;
-        }
+		if (!this.isVecInsideXYBounds(vec35)) {
+			vec35 = null;
+		}
 
-        Vec3 var11 = null;
+		Vec3 vec36 = null;
 
-        if (var5 != null && (var11 == null || start.squareDistanceTo(var5) < start.squareDistanceTo(var11)))
-        {
-            var11 = var5;
-        }
+		if (vec3 != null && (vec36 == null || start.squareDistanceTo(vec3) < start.squareDistanceTo(vec36))) {
+			vec36 = vec3;
+		}
 
-        if (var6 != null && (var11 == null || start.squareDistanceTo(var6) < start.squareDistanceTo(var11)))
-        {
-            var11 = var6;
-        }
+		if (vec31 != null && (vec36 == null || start.squareDistanceTo(vec31) < start.squareDistanceTo(vec36))) {
+			vec36 = vec31;
+		}
 
-        if (var7 != null && (var11 == null || start.squareDistanceTo(var7) < start.squareDistanceTo(var11)))
-        {
-            var11 = var7;
-        }
+		if (vec32 != null && (vec36 == null || start.squareDistanceTo(vec32) < start.squareDistanceTo(vec36))) {
+			vec36 = vec32;
+		}
 
-        if (var8 != null && (var11 == null || start.squareDistanceTo(var8) < start.squareDistanceTo(var11)))
-        {
-            var11 = var8;
-        }
+		if (vec33 != null && (vec36 == null || start.squareDistanceTo(vec33) < start.squareDistanceTo(vec36))) {
+			vec36 = vec33;
+		}
 
-        if (var9 != null && (var11 == null || start.squareDistanceTo(var9) < start.squareDistanceTo(var11)))
-        {
-            var11 = var9;
-        }
+		if (vec34 != null && (vec36 == null || start.squareDistanceTo(vec34) < start.squareDistanceTo(vec36))) {
+			vec36 = vec34;
+		}
 
-        if (var10 != null && (var11 == null || start.squareDistanceTo(var10) < start.squareDistanceTo(var11)))
-        {
-            var11 = var10;
-        }
+		if (vec35 != null && (vec36 == null || start.squareDistanceTo(vec35) < start.squareDistanceTo(vec36))) {
+			vec36 = vec35;
+		}
 
-        if (var11 == null)
-        {
-            return null;
-        }
-        else
-        {
-            EnumFacing var12 = null;
+		if (vec36 == null) {
+			return null;
+		} else {
+			EnumFacing enumfacing = null;
 
-            if (var11 == var5)
-            {
-                var12 = EnumFacing.WEST;
-            }
+			if (vec36 == vec3) {
+				enumfacing = EnumFacing.WEST;
+			}
 
-            if (var11 == var6)
-            {
-                var12 = EnumFacing.EAST;
-            }
+			if (vec36 == vec31) {
+				enumfacing = EnumFacing.EAST;
+			}
 
-            if (var11 == var7)
-            {
-                var12 = EnumFacing.DOWN;
-            }
+			if (vec36 == vec32) {
+				enumfacing = EnumFacing.DOWN;
+			}
 
-            if (var11 == var8)
-            {
-                var12 = EnumFacing.UP;
-            }
+			if (vec36 == vec33) {
+				enumfacing = EnumFacing.UP;
+			}
 
-            if (var11 == var9)
-            {
-                var12 = EnumFacing.NORTH;
-            }
+			if (vec36 == vec34) {
+				enumfacing = EnumFacing.NORTH;
+			}
 
-            if (var11 == var10)
-            {
-                var12 = EnumFacing.SOUTH;
-            }
+			if (vec36 == vec35) {
+				enumfacing = EnumFacing.SOUTH;
+			}
 
-            return new MovingObjectPosition(var11.addVector((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), var12, pos);
-        }
-    }
+			return new MovingObjectPosition(
+					vec36.addVector((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), enumfacing, pos);
+		}
+	}
 
     /**
      * Checks if a vector is within the Y and Z bounds of the block.

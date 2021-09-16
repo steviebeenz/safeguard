@@ -727,13 +727,9 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, IUpdatePlaye
     public void sendPacket(final Packet packetIn)
     {
     	
-    	EventPacket eventPacket = new EventPacket(packetIn);
+    	EventPacket eventPacket = Client.sendPacket(packetIn);
     	
-    	for(Module m : Client.toggledModules) {
-    		m.onSendPacket(eventPacket);
-    	}
-    	
-    	if(eventPacket.getCancelled())return;
+    	if(eventPacket == null || eventPacket.getCancelled())return;
     	
         if (packetIn instanceof S02PacketChat)
         {

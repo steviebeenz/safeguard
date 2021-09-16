@@ -15,12 +15,12 @@ import net.minecraft.item.Item;
 
 public class ESP extends Module {
 	
-	public BooleanSetting box = new BooleanSetting("Box", true), tracers = new BooleanSetting("Tracers", true);
-	public BooleanSetting ESPSelf = new BooleanSetting("ESPSelf", false);
-	public BooleanSetting mob = new BooleanSetting("Mobs", true);
-	public BooleanSetting player = new BooleanSetting("Players", true);
-	public BooleanSetting animal = new BooleanSetting("Animals", true);
-	public BooleanSetting other = new BooleanSetting("Other", true);
+	public static BooleanSetting box = new BooleanSetting("Box", true), tracers = new BooleanSetting("Tracers", true);
+	public static BooleanSetting ESPSelf = new BooleanSetting("ESPSelf", false);
+	public static BooleanSetting mob = new BooleanSetting("Mobs", true);
+	public static BooleanSetting player = new BooleanSetting("Players", true);
+	public static BooleanSetting animal = new BooleanSetting("Animals", true);
+	public static BooleanSetting other = new BooleanSetting("Other", true);
 	
 	public ESP() {
 		super("ESP", Keyboard.KEY_NONE, Category.RENDER, "Renders lines and/or boxes to entities around you", true);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 
-import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.events.listeners.EventPacket;
@@ -13,18 +12,22 @@ import intentions.modules.Module;
 import intentions.modules.player.NoFall;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
+import intentions.util.PacketUtils;
 import intentions.util.PlayerUtil;
 import intentions.util.Timer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 
 public class Flight extends Module {
 	
-	public NumberSetting flightSpeed = new NumberSetting("Speed", 1, 0.2, 4, 0.2);
-	public static ModeSetting type = new ModeSetting("Type","Vanilla", new String[] {"Glide", "Vanilla", "Redesky", "Bounce", "ACD", "AAC3", "Verus","Flappy","Hypixel","Watcher"});
+	public static NumberSetting flightSpeed = new NumberSetting("Speed", 1, 0.2, 10, 0.1);
+	public static ModeSetting type = new ModeSetting("Type","Vanilla", new String[] {"Glide", "Redesky", "Vanilla", "Bounce", "ACD", "AGC", "AAC3", "Verus","Flappy","Hypixel","Watcher"});
 
 	public Flight() {
 		super("Flight", Keyboard.KEY_G, Category.MOVEMENT, "Allows you to fly like a bird", true);
@@ -33,201 +36,235 @@ public class Flight extends Module {
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static boolean flight;
-	private boolean Bounce;
+	private boolean Bounce, above = false;
 	private Timer timer = new Timer();
 	private double[] loc;
 	
 	public void onDisable() {
+		if(type.getMode().equalsIgnoreCase("Verus")) {
+            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+1,mc.thePlayer.posZ, true));
+            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY-1,mc.thePlayer.posZ, true));
+		} else if (type.getMode().equalsIgnoreCase("Watcher")) {
+			mc.thePlayer.motionY = -(cacFly / 100);
+		}
 		mc.timer.timerSpeed = 1f;
 		mc.thePlayer.capabilities.isFlying = false;
 		mc.thePlayer.capabilities.setFlySpeed(0.05f);
 		mc.thePlayer.motionX = 0;
-		mc.thePlayer.motionZ = 0;
 		mc.thePlayer.motionY = 0;
+		mc.thePlayer.motionZ = 0;
 		flight = false;
 		
 		NoFall.shouldWork = true;
 		pitch = 0f;
 		yaw = 0f;
+		cacFly = 0f;
+		mc.gameSettings.keyBindJump.pressed = Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
 		
-		if(type.getMode().equalsIgnoreCase("Watcher")) {
-			
-	        for (Packet packet : packets) {
-	            mc.thePlayer.sendQueue.addToSendQueue(packet);
-	        }
-	        packets.clear();
-		    
-		}
 	}
 	
+	
 	private final ArrayList<Packet> packets = new ArrayList<>();
+	
 	
 	public void onEnable() {
 		flight = true;
 		
-		if(type.getMode().equalsIgnoreCase("Hypixel")) {
-			pitch = 0;
-			mc.thePlayer.motionY = 3f;
+		if(type.getMode().equalsIgnoreCase("Verus")) {
+			mc.thePlayer.motionY = 0.01f;
+		} else if(type.getMode().equalsIgnoreCase("Hypixel")) {
 		} else if (type.getMode().equalsIgnoreCase("Watcher")) {
-			yaw = (float) (mc.thePlayer.motionX);
-			pitch = (float) (mc.thePlayer.motionZ);
+			loc = new double[] {mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ};
+			mc.thePlayer.motionY = 0.03f;
+			//TeleportUtils.pathFinderTeleportTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ), new Vec3(mc.thePlayer.posX, 256, mc.thePlayer.posZ));
 		} else if (type.getMode().equalsIgnoreCase("ACD")) {
-			mc.thePlayer.motionY = 0.75D;
+			yaw = (float)mc.thePlayer.posY;
+		} else if (type.getMode().equalsIgnoreCase("Flappy")) {
+			mc.thePlayer.motionY = 0.2f;
 		}
 	}
 	
-	public void onUpdate() {
-		if(!type.getMode().equalsIgnoreCase("Redesky")) {
-			mc.thePlayer.speedInAir = 0.02F;
-		}
-		if(mc.thePlayer.onGround) {
-			loc = new double[]{mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ};
-		}
-	}
+	EventPacket lastC04 = null;
+	boolean aac5nextFlag;
+	ArrayList<C03PacketPlayer> aac5C03List = new ArrayList<C03PacketPlayer>();
 	
 	public void onSendPacket(EventPacket e) {
-		if(mc.theWorld == null || mc.thePlayer == null || mc.thePlayer.onGround)return;
-		if(type.getMode().equalsIgnoreCase("ACD")) {
-			e.setCancelled(mc.thePlayer.ticksExisted % 2 == 0);
+		if(mc.theWorld == null || mc.thePlayer == null || mc.thePlayer.onGround || !this.toggled)return;
+		if(e.getPacket() instanceof C04PacketPlayerPosition) {
+			lastC04 = e;
 		}
-		else if(type.getMode().equalsIgnoreCase("Watcher")) {
-			e.setCancelled(true);
-			if(e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition) {
-				packets.add(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.1, mc.thePlayer.posZ, mc.thePlayer.onGround));
-				return;
+		
+		if(type.getMode().equalsIgnoreCase("Watcher")) {
+			if(e.getPacket() instanceof C04PacketPlayerPosition) {
+				e.setCancelled(true);
+				C04PacketPlayerPosition p = (C04PacketPlayerPosition)e.getPacket();
+				PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(p.x, p.y, p.z, p.yaw, p.pitch, mc.thePlayer.onGround));
 			}
-			packets.add(e.getPacket());
+		} else if (type.getMode().equalsIgnoreCase("Redesky")) {
+			if(e.getPacket() instanceof S08PacketPlayerPosLook) {
+            
+				C04PacketPlayerPosition l = (C04PacketPlayerPosition) lastC04.getPacket();
+			} else if (e.getPacket() instanceof C03PacketPlayer) {
+				double f=mc.thePlayer.width/2.0;
+				final C03PacketPlayer packetPlayer = (C03PacketPlayer)e.getPacket();
+                // need to no collide else will flag
+                if(aac5nextFlag || !mc.theWorld.checkBlockCollision(new AxisAlignedBB(packetPlayer.getPositionX() - f, packetPlayer.getPositionY(), packetPlayer.getPositionZ() - f, packetPlayer.getPositionX() + f, packetPlayer.getPositionY() + mc.thePlayer.height, packetPlayer.getPositionZ() + f))){
+                    aac5C03List.add(packetPlayer);
+                    aac5nextFlag=false;
+                    e.setCancelled(true);
+                    if(!timer.hasTimeElapsed(1000, true) && aac5C03List.size() > 7) {
+                        sendAAC5Packets();
+                    }
+                }
+			}
+		} else if (type.getMode().equalsIgnoreCase("Verus")) {
+			e.setCancelled(mc.thePlayer.ticksExisted % 2 == 0);
 		}
 	}
 	
+	private void sendAAC5Packets(){
+        float yaw=mc.thePlayer.rotationYaw;
+        float pitch=mc.thePlayer.rotationPitch;
+        for(C03PacketPlayer packet : aac5C03List){
+            PacketUtils.sendPacketNoEvent(packet);
+            if(packet.getRotating()){
+                yaw=packet.getYaw();
+                pitch=packet.getPitch();
+            }
+            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,256,packet.z, true));
+            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
+        }
+        
+        aac5C03List.clear();
+    }
 	
-	float pitch = 0,yaw = 0;
+	
+	float pitch = 0,yaw = 0, cacFly = 0;
 	
 	public void onEvent(Event e) {
 		if(e instanceof EventUpdate) {
 			if(e.isPre() && this.toggled) {
 				
 				if(type.getMode().equalsIgnoreCase("ACD")) {
-					if(mc.thePlayer.onGround)return;
-					
-					mc.thePlayer.motionY = -0.051;
-					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.051, mc.thePlayer.posZ, mc.thePlayer.onGround));
-					return;
-				}
-				
-				if(type.getMode().equalsIgnoreCase("Watcher"))return;
-				
-				if(type.getMode().equalsIgnoreCase("Hypixel")) {
-					pitch++;
-					
-					NoFall.shouldWork = false;
-					
-					boolean beforeGround = mc.thePlayer.onGround;
-					
-					if(pitch < 10 && pitch > 3) {
-						
-						mc.timer.timerSpeed = 10f;
-						mc.thePlayer.onGround = false;
-						
-						if(pitch % 2 == 0) {
-							mc.thePlayer.motionY = 1f;
-						} else {
-							mc.thePlayer.motionY = -1f;
+                   
+						if(loc != null && mc.thePlayer.posX == loc[0] && mc.thePlayer.posY == loc[1] && mc.thePlayer.posZ == loc[2]) {
+							mc.thePlayer.motionY *= 0.05f;
+							return;
 						}
-						
-						
+					
+						if(mc.thePlayer.onGround) {
+							cacFly = 0;
+							yaw++;
+							if(yaw < 5)return;
+						}
+						yaw = 0;
+						cacFly++;
+					    if(cacFly > 7) {;
+					       mc.thePlayer.capabilities.isFlying = false;
+					       mc.gameSettings.keyBindJump.pressed = Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
+					       return;
+					    }
+					    mc.gameSettings.keyBindJump.pressed = true;
+						mc.timer.timerSpeed = 1.1555324f;
+						mc.thePlayer.motionY *= 1.93f;
+						mc.thePlayer.motionY -= 0.08f;
+						mc.thePlayer.motionY *= 0.98f;
+						mc.thePlayer.motionX *= 1.05f;
+						mc.thePlayer.motionZ *= 1.05f;
+						mc.thePlayer.capabilities.isFlying = true;
+						mc.thePlayer.capabilities.setFlySpeed(0.02f);
+						loc = new double[] {mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ};
 						return;
-					} else {
-						mc.thePlayer.onGround = true;
-						mc.thePlayer.setPosition(mc.thePlayer.posX, (Math.floor(mc.thePlayer.posY) - yaw) + 1.3f, mc.thePlayer.posZ);
-					}
 					
-					if(pitch < 30) {
-						mc.timer.timerSpeed = 2.2f;
-					} else if (pitch < 80) {
-						mc.timer.timerSpeed = 1.9f;
-					} else if (pitch < 180) {
-						mc.timer.timerSpeed = 0.9f;
-					} else if (pitch < 250) {
-						mc.timer.timerSpeed = 1f;
-						this.toggle();
-					}
-					if(beforeGround) {
-						mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.4f, mc.thePlayer.posZ);
-					}
 					
-					mc.thePlayer.motionY = 0;
+				} else if(type.getMode().equalsIgnoreCase("Watcher")) {
+					
+					
+					
+					//for(int i=0;i<30;i++) {
+					//	mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround));
+					//}
+				}else if(type.getMode().equalsIgnoreCase("Hypixel")) {
+					
+					// https://github.com/UnlegitMC/FDPClient/blob/master/src/main/java/net/ccbluex/liquidbounce/features/module/modules/movement/Fly.java
+					
+	                mc.timer.timerSpeed=0.7F;
+	                mc.thePlayer.motionX=0;
+	                mc.thePlayer.motionY=0;
+	                mc.thePlayer.motionZ=0;
+	                if(timer.hasTimeElapsed(1000, true)){
+	                    // hclip LMFAO
+	                    double yaw=Math.toRadians(mc.thePlayer.rotationYaw);
+	                    double x = -Math.sin(yaw) * 0.7;
+	                    double z = Math.cos(yaw) * 0.7;
+	                    mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY, mc.thePlayer.posZ + z);
+	                }
+	                mc.thePlayer.jumpMovementFactor = 0.00f;
 					return;
-				}
-				if(type.getMode().equalsIgnoreCase("Flappy")) {
-					if(mc.thePlayer.onGround)return;
-					mc.thePlayer.motionY = 0;
-					for(int i=0;i<4;i++)
-						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
-					return;
-				}else
-				if(type.getMode().equalsIgnoreCase("AAC3"))  {
+				} else if(type.getMode().equalsIgnoreCase("Flappy")) {
+					  if(mc.thePlayer.onGround || PlayerUtil.getPlayerHeightDouble() < 0.2)return;
+				      mc.thePlayer.motionY = 0;
+				      mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.000001f, mc.thePlayer.posZ);
+                    return;
+				}else if(type.getMode().equalsIgnoreCase("AAC3"))  {
 					mc.timer.timerSpeed = 1.3f;
 				}
 				else if (type.getMode().equalsIgnoreCase("Redesky")) {
-		            this.mc.thePlayer.cameraYaw = -0.2F;
-		            this.mc.thePlayer.sendQueue.addToSendQueue(new C00PacketKeepAlive(50000));
-		            this.mc.thePlayer.cameraYaw = -0.2F;
-		            if (this.timer.hasTimeElapsed(200L, false)) {
-		               this.mc.timer.timerSpeed = 0.05F;
-		               this.mc.thePlayer.motionY = 0.0D;
-		               this.mc.thePlayer.capabilities.isFlying = true;
-		               this.mc.thePlayer.jumpMovementFactor = 0.06F;
-		               this.mc.thePlayer.speedInAir = 0.08F;
-		               if (this.timer.hasTimeElapsed(800L, true)) {
-		                  if (this.yaw < 2.0F) {
-		                     this.mc.timer.timerSpeed = 2.0F;
-		                  } else {
-		                     this.mc.timer.timerSpeed = 1.0F;
-		                  }
-
-		                  ++this.yaw;
-		               }
-		            }
 				}
 				else if (type.getMode().equalsIgnoreCase("Bounce") || type.getMode().equalsIgnoreCase("Flappy")) {
+					if(mc.thePlayer.onGround || PlayerUtil.getPlayerHeightDouble() <= 0.1)return;
 					if(!Bounce)
 					{
 						Bounce = true;
-						mc.thePlayer.motionY += 1 / 20;
+						mc.thePlayer.motionY += 0.201;
 					} else {
 						Bounce = false;
-						mc.thePlayer.motionY -= 1 / 20;
+						mc.thePlayer.motionY -= 0.2;
 					}
 				} else if (type.getMode().equalsIgnoreCase("Verus")) {
-					mc.thePlayer.motionY = 0;
+					if(PlayerUtil.getPlayerHeightDouble() < 0.2 || mc.thePlayer.onGround)return;
+					mc.thePlayer.motionY = -0.0054f;
 					mc.thePlayer.onGround = true;
+					if(mc.thePlayer.isCollided)return;
+					cacFly++;
+					mc.timer.timerSpeed = 1.15f;
+					if(cacFly % 3 == 0 && isMovingKB()) {
+						mc.thePlayer.setSpeed(0.256f);
+						mc.timer.timerSpeed = 2.3f;
+					}
+					if(cacFly % 4 == 0) {
+						mc.thePlayer.motionY = 0.016f;
+					}
+					mc.thePlayer.fallDistance = 0f;
+					return;
+				} else if (type.getMode().equalsIgnoreCase("AGC")) {
+					mc.thePlayer.sendQueue.addToSendQueueNoEvent(new C03PacketPlayer(true));
+	                if(Math.random()>0.5){
+	                    mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(new BlockPos(0,-1,0),
+	                            0,mc.thePlayer.inventory.getCurrentItem(),0,0,0));
+	                }
+	                mc.thePlayer.motionY = 0;
 					return;
 				}
-				if(!type.getMode().equalsIgnoreCase("Redesky"))
-					mc.thePlayer.capabilities.isFlying = true;
+				mc.thePlayer.capabilities.isFlying = true;
+				mc.thePlayer.fallDistance = 0f;
 				mc.thePlayer.capabilities.setFlySpeed((float)flightSpeed.getValue() / 20f);
 			}
 		} else if (e instanceof EventMotion) {
 			if(type.getMode().equalsIgnoreCase("ACD")) {
-				mc.thePlayer.motionX *= 0.7F;
-				mc.thePlayer.motionZ *= 0.7F;
-				
-				e.setCancelled(mc.thePlayer.ticksExisted % 2 == 0);
-				
-			} else if (type.getMode().equalsIgnoreCase("Flappy")) {
-				if(mc.thePlayer.onGround)return;
-				((EventMotion) e).setY(Math.floor(mc.thePlayer.posY) - PlayerUtil.getPlayerHeight()+1);
-				((EventMotion) e).setOnGround(true);
 			} else if (type.getMode().equalsIgnoreCase("Watcher")) {
-				e.setCancelled(true);
-				mc.thePlayer.motionY = 0;
-				if(mc.thePlayer.motionX < yaw && mc.thePlayer.motionX > -yaw && mc.thePlayer.motionX != 0)
-					mc.thePlayer.motionX *= 1.1;
-				if(mc.thePlayer.motionZ < pitch && mc.thePlayer.motionZ > -pitch && mc.thePlayer.motionZ != 0)
-					mc.thePlayer.motionZ *= 1.1;
+				if(!isMovingKB()) {
+					mc.thePlayer.motionX = 0;
+					mc.thePlayer.motionZ = 0;
+				}
 			}
 		}
+	}
+	
+	@Override
+	public void onBB(AxisAlignedBB e) {
+		if(type.getMode().equalsIgnoreCase("AGC"))
+			e.setBoundingBox(AxisAlignedBB.fromBounds(e.minX, e.minY, e.minZ, e.minX + 1, mc.thePlayer.posY, e.minZ + 1));
 	}
 
 	public void onTick() {

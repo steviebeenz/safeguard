@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
@@ -44,18 +46,17 @@ public class Scaffold extends Module {
 	public static boolean scaffold = false;
 	public boolean cooldown = false;
 	public BooleanSetting eagle = new BooleanSetting("Eagle", false), timerTower = new BooleanSetting("Timer", false);;
-	public NumberSetting delay = new NumberSetting("Delay", 1, 0, 50, 1);
+	public static NumberSetting delay = new NumberSetting("Delay", 1, 0, 50, 1);
 	
-	public ModeSetting mode = new ModeSetting("Mode", "V1", new String[] {"V1", "V2"});
+	public static ModeSetting mode = new ModeSetting("Mode", "V1", new String[] {"V2", "V1"});
 	
 	public int t, t2;
 	
 	public boolean rotated = false;
   
     public Scaffold() {
-        super("Scaffold", 0, Category.WORLD, "Automatically builds below your feet", true);
+        super("Scaffold", Keyboard.KEY_X, Category.WORLD, "Automatically builds below your feet", true);
         this.addSettings(eagle, delay, mode, timerTower);
-        
         this.invalidBlocks = Arrays.asList(Blocks.enchanting_table, Blocks.furnace, Blocks.carpet, Blocks.crafting_table, Blocks.trapped_chest, Blocks.chest, Blocks.dispenser, Blocks.air, Blocks.water, Blocks.lava, Blocks.flowing_water, Blocks.flowing_lava, Blocks.sand, Blocks.snow_layer, Blocks.torch, Blocks.anvil, Blocks.jukebox, Blocks.stone_button, Blocks.wooden_button, Blocks.lever, Blocks.noteblock, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.wooden_pressure_plate, Blocks.heavy_weighted_pressure_plate, Blocks.stone_slab, Blocks.wooden_slab, Blocks.stone_slab2, Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.yellow_flower, Blocks.red_flower, Blocks.anvil, Blocks.glass_pane, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.cactus, Blocks.ladder, Blocks.web);
         this.validBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava);
         this.blockPositions = new BlockPos[]{new BlockPos(-1, 0, 0), new BlockPos(1, 0, 0), new BlockPos(0, 0, -1)};

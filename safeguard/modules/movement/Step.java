@@ -32,13 +32,13 @@ public class Step extends Module {
 				if(mode.getMode().equalsIgnoreCase("V2")) {
 					double y = mc.thePlayer.posY;
 					for(int i=0;i<height.getValue();i++) {
-						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.42, mc.thePlayer.posZ, mc.thePlayer.onGround));
-						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.75, mc.thePlayer.posZ, mc.thePlayer.onGround));
+						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.42, mc.thePlayer.posZ, false));
+						mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, y + 0.75, mc.thePlayer.posZ, false));
 						y++;
 					}
 				}else if (mode.getMode().equalsIgnoreCase("V1")) {
-					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.42 * (float) height.getValue()), mc.thePlayer.posZ, mc.thePlayer.onGround));
-					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.75 * (float) height.getValue()), mc.thePlayer.posZ, mc.thePlayer.onGround));
+					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.42 * (float) height.getValue()), mc.thePlayer.posZ, false));
+					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + (0.75 * (float) height.getValue()), mc.thePlayer.posZ, false));
 				}
 				
 				mc.thePlayer.stepHeight = (float) height.getValue();
@@ -57,7 +57,7 @@ public class Step extends Module {
 					shouldstep = true;
 					mc.timer.timerSpeed = 4;
 					mc.thePlayer.motionY += 0.47;
-					mc.thePlayer.motionY += 0.55; //for 1.5 block step
+					//mc.thePlayer.motionY += 0.55; //for 1.5 block step
 				}
 			}
 			

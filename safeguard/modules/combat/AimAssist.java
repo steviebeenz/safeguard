@@ -83,14 +83,18 @@ public class AimAssist extends Module {
         cRotations[0] -= 180;
         cRotations[1] -= 180;
         
-        Client.addChatMessage(cRotations[0] + " - " + rotations[0]);
-        
-        if(rotations[0] > cRotations[0]) 
+        if(rotations[0] > cRotations[0] || rotations[0] + 360 > cRotations[0]) 
         	if(cRotations[0] + turnSpeed.getValue() > rotations[0]) 
         		mc.thePlayer.rotationYaw = rotations[0]+180;
         	else 
         		mc.thePlayer.rotationYaw += turnSpeed.getValue();
         	
+        else if(rotations[0] + 360 > cRotations[0]) 
+        	if(cRotations[0] + turnSpeed.getValue() > rotations[0] + 360) 
+        		mc.thePlayer.rotationYaw = rotations[0]+180;
+        	else 
+        		mc.thePlayer.rotationYaw += turnSpeed.getValue();
+        
          else if(rotations[0] < cRotations[0]) 
         	 if(cRotations[0] - turnSpeed.getValue() > rotations[0]) 
          		mc.thePlayer.rotationYaw = rotations[0]+180;
@@ -99,6 +103,12 @@ public class AimAssist extends Module {
         
         if(rotations[1] > cRotations[1]) 
         	if(cRotations[1] + turnSpeed.getValue() > rotations[1]) 
+        		mc.thePlayer.rotationPitch = rotations[1]+180;
+        	else 
+        		mc.thePlayer.rotationPitch += turnSpeed.getValue();
+        
+        else if(rotations[1] + 360 > cRotations[1]) 
+        	if(cRotations[1] + turnSpeed.getValue() > rotations[1] + 360) 
         		mc.thePlayer.rotationPitch = rotations[1]+180;
         	else 
         		mc.thePlayer.rotationPitch += turnSpeed.getValue();

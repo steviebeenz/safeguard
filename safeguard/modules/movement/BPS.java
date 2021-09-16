@@ -2,11 +2,11 @@ package intentions.modules.movement;
 
 import org.lwjgl.input.Keyboard;
 
-import intentions.Client;
 import intentions.events.Event;
 import intentions.events.listeners.EventRenderGUI;
 import intentions.modules.Module;
 import intentions.settings.NumberSetting;
+import intentions.util.Timer;
 import net.minecraft.client.gui.FontRenderer;
 
 public class BPS extends Module {
@@ -22,12 +22,15 @@ public class BPS extends Module {
 	private double secPosZ = 0, secPosX = 0;
 	private double xDis = 0, zDis = 0, bps = 0, hbps = 0;;
 
+	private Timer timer = new Timer();
+	
 	public void onDisable() {
 		hbps = 0;
 		bps = 0;
 	}
 	
-	public void onTick() {
+	public void onUpdate() {
+		if(timer.hasTimeElapsed(50, true))
 		secBPS++;
 	}
 	

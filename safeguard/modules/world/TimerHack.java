@@ -29,7 +29,8 @@ public class TimerHack extends Module {
 	}
 
 	public void onTick() {
-		if (Timer && mc.thePlayer != null)
+		if (this.toggled) {
 			mc.timer.timerSpeed = (float) timerSpeed.getValue();
+		}
 	}
 }

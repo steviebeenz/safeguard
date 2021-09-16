@@ -35,7 +35,7 @@ public class MultiAura extends Module {
   public static ModeSetting priority = new ModeSetting("Priority", "Passive", new String[] { "Passive", "None", "Mobs", "Players" });
   
   public MultiAura() {
-    super("MultiAura", 47, Module.Category.COMBAT, "Attacks ALL entities around you", true);
+    super("MultiAura", 0, Module.Category.COMBAT, "Attacks ALL entities around you", true);
     addSettings(new Setting[] { (Setting)range, (Setting)cps, (Setting)this.noSwing, (Setting)this.priority, (Setting)this.esp });
   }
 

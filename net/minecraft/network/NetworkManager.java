@@ -166,13 +166,22 @@ public class NetworkManager extends SimpleChannelInboundHandler
     public void sendPacket(Packet packetIn)
     {
     	
-    	EventPacket eventPacket = new EventPacket(packetIn);
+    	EventPacket eventPacket = Client.sendPacket(packetIn);
     	
-    	for(Module m : Client.toggledModules) {
-    		m.onSendPacket(eventPacket);
-    	}
+    	if(eventPacket == null || eventPacket.getCancelled())return;
     	
-    	if(eventPacket.getCancelled())return;
+        if (this.channel != null && this.channel.isOpen())
+        {
+            this.flushOutboundQueue();
+            this.dispatchPacket(packetIn, (GenericFutureListener[])null);
+        }
+        else
+        {
+            this.outboundPacketsQueue.add(new NetworkManager.InboundHandlerTuplePacketListener(packetIn, (GenericFutureListener[])null));
+        }
+    }
+    public void sendPacketNoEvent(Packet packetIn)
+    {
     	
         if (this.channel != null && this.channel.isOpen())
         {
@@ -188,13 +197,9 @@ public class NetworkManager extends SimpleChannelInboundHandler
     public void sendPacket(Packet packetIn, GenericFutureListener listener, GenericFutureListener ... listeners)
     {
     	
-    	EventPacket eventPacket = new EventPacket(packetIn);
+    	EventPacket eventPacket = Client.sendPacket(packetIn);
     	
-    	for(Module m : Client.toggledModules) {
-    		m.onSendPacket(eventPacket);
-    	}
-    	
-    	if(eventPacket.getCancelled())return;
+    	if(eventPacket == null || eventPacket.getCancelled())return;
     	
         if (this.channel != null && this.channel.isOpen())
         {
