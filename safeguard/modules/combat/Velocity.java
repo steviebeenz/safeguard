@@ -11,8 +11,8 @@ import net.minecraft.util.Vec3;
 
 public class Velocity extends Module {
 	
-	public NumberSetting horizontal = new NumberSetting("Horizontal", 0, 0, 500, 5);
-	public NumberSetting vertical = new NumberSetting("Vertical", 0, 0, 500, 5);
+	public static NumberSetting horizontal = new NumberSetting("Horizontal", 0, 0, 500, 5);
+	public static NumberSetting vertical = new NumberSetting("Vertical", 0, 0, 500, 5);
 	
 	public static ModeSetting mode = new ModeSetting("Mode", "Normal", new String[] {"Normal", "Packet"});
 
@@ -42,9 +42,6 @@ public class Velocity extends Module {
 			mc.thePlayer.motionZ *= h;
 			mc.thePlayer.motionX *= h;
 			mc.thePlayer.motionY *= v;
-			
-			TeleportUtils.pathFinderTeleportTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ), TeleportUtils.getVec3(new BlockPos(mc.thePlayer.posX + 1, mc.thePlayer.posY + 1, mc.thePlayer.posZ + 1)));
-			TeleportUtils.pathFinderTeleportTo(new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ), TeleportUtils.getVec3(new BlockPos(mc.thePlayer.posX - 1, mc.thePlayer.posY - 1, mc.thePlayer.posZ - 1)));
 		}
 	}
 }

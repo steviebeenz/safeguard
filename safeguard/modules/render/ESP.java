@@ -12,6 +12,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
 
 public class ESP extends Module {
 	
@@ -43,7 +44,7 @@ public class ESP extends Module {
 			//{
 				try {
 					EntityLivingBase entity = (EntityLivingBase) obj;
-					
+					if(entity.isPotionActive(Potion.invisibility) || entity.isInvisible())continue;
 					if(entity instanceof EntityPlayer && player.isEnabled()) {
 						if(!ESPSelf.isEnabled() && obj == mc.thePlayer && player.isEnabled()) continue;
 						if(obj == mc.thePlayer) {

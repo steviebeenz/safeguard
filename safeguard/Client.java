@@ -69,6 +69,7 @@ import intentions.modules.render.ESP;
 import intentions.modules.render.FullBright;
 import intentions.modules.render.TabGUI;
 import intentions.modules.world.AntiVoid;
+import intentions.modules.world.CheatDetector;
 import intentions.modules.world.ChestStealer;
 import intentions.modules.world.Scaffold;
 import intentions.modules.world.TimerHack;
@@ -86,7 +87,7 @@ import net.minecraft.util.Session;
 
 public class Client {
 	
-	public static String name = "SafeGuard", version = "b3.3.3";
+	public static String name = "SafeGuard", version = "b3.3.4";
 	public static CopyOnWriteArrayList<Module> modules = new CopyOnWriteArrayList<Module>();
 	public static CopyOnWriteArrayList<Module> toggledModules = new CopyOnWriteArrayList<Module>();
 	public static HUD hud = new HUD();
@@ -117,6 +118,8 @@ public class Client {
 		a(new TimerHack());
 		
 		a(new ChestStealer());
+		
+		a(new CheatDetector());
 		
 		// Movement
 		a(new Flight());
@@ -293,10 +296,11 @@ public class Client {
 	}
 	
 	public static void keyPress(int key) {
+		if(!TabGUI.openTabGUI) return;
 		Client.onEvent(new EventKey(key));
 		
 		for(Module m : modules) {
-			if (m.getKey() == key && TabGUI.openTabGUI) {
+			if (m.getKey() == key) {
 				m.toggle();
 				break;
 			}
@@ -328,6 +332,7 @@ public class Client {
 	}
 	
 	public static void onRender() {
+		if(!TabGUI.openTabGUI) return;
 		for(Module module : Client.toggledModules) {
 			module.onRender();
 		}
@@ -336,6 +341,7 @@ public class Client {
 	public static void onTick() {
 		if(!TabGUI.openTabGUI) return;
 		for (Module module : Client.toggledModules) {
+			
 			module.onTick();
 		}
 		Waypoint.onTick();
@@ -343,6 +349,7 @@ public class Client {
 	
 	public static void onUpdate() {
 		if(!TabGUI.openTabGUI) return;
+		Minecraft mc = Minecraft.getMinecraft();
 		for(Module module : Client.modules) {
 			if(module.name == "Flight" && (!module.toggled || !((Flight)module).type.getMode().equalsIgnoreCase("Redesky"))) {
 				Minecraft.getMinecraft().thePlayer.speedInAir = 0.02f;

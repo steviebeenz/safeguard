@@ -74,7 +74,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private boolean field_175171_bO;
     private int field_175168_bP;
     private boolean field_175169_bQ;
-    private String clientBrand;
+    private String clientBrand = "1.17.1";
     public MovementInput movementInput;
     protected Minecraft mc;
 
@@ -401,12 +401,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void func_175158_f(String p_175158_1_)
     {
-        this.clientBrand = p_175158_1_;
+        this.clientBrand = "1.17.1";
     }
 
     public String getClientBrand()
     {
-        return "cac best ac";
+        return "1.17.1";
     }
 
     public StatFileWriter getStatFileWriter()
@@ -904,4 +904,5 @@ public class EntityPlayerSP extends AbstractClientPlayer
         motionX = speed * -Math.sin(playerYaw);
         motionZ = speed * Math.cos(playerYaw);
     }
+
 }

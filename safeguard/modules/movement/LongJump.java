@@ -25,46 +25,21 @@ public class LongJump extends Module{
 	
 	public void onEnable() {
 		Client.addChatMessage("Jumped long");
-		mc.thePlayer.motionY = 0;
+		mc.thePlayer.jump();
 	}
 	public void onDisable() {
 		mc.thePlayer.capabilities.isFlying = false;
+		ticksOn = 0;
+		startY = 0;
+		mc.timer.timerSpeed = 1f;
 	}
 	
 	public void onEvent(Event e) {
 		if(e instanceof EventMotion) {
 			ticksOn++;
-			if(mc.thePlayer.onGround) {
-				mc.thePlayer.jump();
-				ticksOn = 0;
-			}
-			
-			double speed = 0.65f;
-			double motionXZ = 1.85f;
-			double motionY = 0.055f;
-			float airSpeed = 20f;
-			float timer = 1.1f;
-			
-			
-			
-			
-			motionY = motionY + (ticksOn / 10000) - (PlayerUtil.getPlayerHeightDouble() / 300);
-			if(motionY > 0.07f) motionY = 0.07f;
-			if(motionY < 0.04f) motionY = 0.04f;
-			speed = speed + (ticksOn / 100);
-			if(speed > 4.65f) speed = 4.65f;
-			
-			mc.thePlayer.speedInAir = 0.02f;
-			if(PlayerUtil.getPlayerHeightDouble() > 1) {
-				mc.thePlayer.motionY += motionY;
-				mc.thePlayer.speedInAir = airSpeed;
-				double playerYaw = Math.toRadians(mc.thePlayer.rotationYaw);
-		        mc.thePlayer.motionX = speed * -Math.sin(playerYaw);
-		        mc.thePlayer.motionZ = speed * Math.cos(playerYaw);
-				mc.thePlayer.motionX *= motionXZ;
-				mc.thePlayer.motionZ *= motionXZ;
-				mc.timer.timerSpeed = timer;
-			}
+			mc.timer.timerSpeed = (float) 1.25;
+			mc.thePlayer.motionY += Math.min(0.07f + (ticksOn / 20000), 0.1);
+			mc.thePlayer.setSpeed(0.35f + (ticksOn / 250));
 		}
 	}
 	

@@ -13,6 +13,8 @@ import intentions.settings.NumberSetting;
 import intentions.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 
 public class Speed extends Module {
 	
@@ -29,7 +31,7 @@ public class Speed extends Module {
 	public static Minecraft mc = Minecraft.getMinecraft();
 	
 	public void onEnable() {
-		if(!bypass.getMode().equalsIgnoreCase("Spartan"))
+		if(!bypass.getMode().equalsIgnoreCase("Spartan") && !bypass.getMode().equalsIgnoreCase("ACD"))
 			y = mc.thePlayer.posY;
 	}
 	
@@ -69,9 +71,17 @@ public class Speed extends Module {
 					return;
 				}
 				else if (bypass.getMode().equalsIgnoreCase("ACD")) {
-					if(mc.thePlayer.onGround && jump.isEnabled()) mc.thePlayer.jump();
-					mc.thePlayer.motionX *= 1.1f;
-		    		mc.thePlayer.motionZ *= 1.1f;
+					if(mc.thePlayer.onGround) {
+						mc.thePlayer.jump();
+						mc.thePlayer.motionY *= 0.6f;
+					}
+					y++;
+					mc.thePlayer.motionX *= 1.5f;
+		    		mc.thePlayer.motionZ *= 1.5f;
+		    		mc.timer.timerSpeed = 1f;
+		    		if(y % 2 == 0) {
+		    			mc.thePlayer.setSpeed(0.5f);
+		    		}
 					mc.thePlayer.onGround = true;
 					return;
 				}
@@ -106,11 +116,21 @@ public class Speed extends Module {
 					}
 		    		return;
 				} else if (bypass.getMode().equalsIgnoreCase("Hypixel")) {
+					mc.timer.timerSpeed = 1.1f;
 					if(mc.thePlayer.onGround) {
-						if (jump.isEnabled()) mc.thePlayer.jump(); 
-						mc.thePlayer.motionX *= 1.2f;
-						mc.thePlayer.motionZ *= 1.2f;
+						if (jump.isEnabled()) {
+							mc.thePlayer.jump();
+							mc.thePlayer.motionY = 0.4f; // ez
+						}
+						mc.timer.timerSpeed = 1.2f;
+						mc.thePlayer.motionX *= 1.07f;
+						mc.thePlayer.motionZ *= 1.07f;
 					}
+					if(mc.thePlayer.ticksExisted % 2 == 0) {
+						mc.thePlayer.motionX *= 1.006f;
+						mc.thePlayer.motionZ *= 1.006f;
+					}
+					mc.thePlayer.speedInAir = 0.03f;
 					return;
 				}
 				if (mc.thePlayer.onGround && waitOnGround.isEnabled()) {

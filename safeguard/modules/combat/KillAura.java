@@ -1,5 +1,6 @@
 package intentions.modules.combat;
 
+import java.awt.Color;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,8 @@ import intentions.settings.Setting;
 import intentions.util.PlayerUtil;
 import intentions.util.RenderUtils;
 import intentions.util.Timer;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -49,19 +52,6 @@ public class KillAura extends Module {
   private int timeSinceLastAtk;
 
   
-  public void onRender() {
-	  if(esp.isEnabled() && timeSinceLastAtk < 10 && target != null) {
-		if(!target.isEntityAlive()) { target = null; return; }
-		float red = 0.10588235294f;
-		float green = 0.56470588235f;
-		float blue = 0.75294117647f;
-		
-		double xPos = (target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks) - mc.getRenderManager().renderPosX;
-		double yPos = (target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks) - mc.getRenderManager().renderPosY;
-		double zPos = (target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks) - mc.getRenderManager().renderPosZ;    		
-		render(red, green, blue, xPos, yPos, zPos, target.width, target.height);
-      }
-  }
   
   public void onEvent(Event e) {
     if (e instanceof EventMotion && 
@@ -104,6 +94,8 @@ public class KillAura extends Module {
       if (!targets.isEmpty()) {
         EntityLivingBase target = targets.get(0);
         
+        if(target.isInvisibleToPlayer(mc.thePlayer))return;
+        
         if (this.rotation.getMode() == "Server") {
         	if(mc.objectMouseOver.entityHit != target && mc.thePlayer.getDistanceToEntity(target) > 0.1) {
             	event.setYaw((float) ((float) getRotations((Entity)target)[0]) + (float)(Math.random()));
@@ -141,8 +133,25 @@ public class KillAura extends Module {
     } 
   }
   
-  public void render(float red, float green, float blue, double x, double y, double z, float width, float height) {
-	  RenderUtils.drawEntityESP(x, y, z, width - (width / 4), height, red, green, blue, 0.2F, 0F, 0F, 0F, 1F, 1F);
+  
+  public void onUpdate() {
+      if (target != null && !target.isDead && target != mc.thePlayer && mc.thePlayer.getDistanceToEntity(target) <= range.getValue() && esp.isEnabled()) {
+          //Entity And Background
+          GuiInventory.drawEntityOnScreen(ScaledResolution.getScaledWidth()/2-30,ScaledResolution.getScaledHeight()/2+80, 22, target.rotationYaw, target.rotationPitch, target);
+          RenderUtils.drawRect(ScaledResolution.getScaledWidth()/2-60, ScaledResolution.getScaledHeight()/2+23, ScaledResolution.getScaledWidth()/2+105, ScaledResolution.getScaledHeight()/2+83, new Color(0, 0, 0, 120).getRGB());
+          //Text
+          mc.fontRendererObj.drawString(target.getName(), ScaledResolution.getScaledWidth()/2+10, ScaledResolution.getScaledHeight()/2+50, new Color(255, 255, 255, 255).getRGB());
+          mc.fontRendererObj.drawString("Health: §c" + Math.ceil(target.getHealth()), ScaledResolution.getScaledWidth()/2+10, ScaledResolution.getScaledHeight()/2+60, new Color(255, 255, 255, 255).getRGB());
+          //Winning Status
+          if (mc.thePlayer.getHealth() - target.getHealth() == 0) mc.fontRendererObj.drawString("Tie", ScaledResolution.getScaledWidth()/2+10, ScaledResolution.getScaledHeight()/2+70, new Color(255, 255, 255, 255).getRGB());
+          if (mc.thePlayer.getHealth() - target.getHealth() > 0) mc.fontRendererObj.drawString("Winning", ScaledResolution.getScaledWidth()/2+10, ScaledResolution.getScaledHeight()/2+70, new Color(255, 255, 255, 255).getRGB());
+          if (mc.thePlayer.getHealth() - target.getHealth() < 0) mc.fontRendererObj.drawString("Losing", ScaledResolution.getScaledWidth()/2+10, ScaledResolution.getScaledHeight()/2+70, new Color(255, 255, 255, 255).getRGB());
+          //Health
+          RenderUtils.drawRect(ScaledResolution.getScaledWidth()/2, ScaledResolution.getScaledHeight()/2+30, (int) (ScaledResolution.getScaledWidth()/2+40+target.getHealth()-target.hurtTime), ScaledResolution.getScaledHeight()/2+40, new Color(255,51,204,255).getRGB());
+          RenderUtils.drawRect(ScaledResolution.getScaledWidth()/2, ScaledResolution.getScaledHeight()/2+30, (int) (ScaledResolution.getScaledWidth()/2+40+target.getHealth()-target.hurtTime), ScaledResolution.getScaledHeight()/2+40, new Color(255,51,204,255).getRGB());
+          //Health Background
+          RenderUtils.drawRect(ScaledResolution.getScaledWidth()/2, ScaledResolution.getScaledHeight()/2+30, (int) (ScaledResolution.getScaledWidth()/2+40+target.getMaxHealth()), ScaledResolution.getScaledHeight()/2+40, new Color(128,128,128,150).getRGB());
+      }
   }
   
   

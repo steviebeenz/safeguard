@@ -526,7 +526,7 @@ public class EffectRenderer
 
         if (block != null && !blockAddHitEffects)
         {
-            this.func_180532_a(pos, target.field_178784_b);
+            this.func_180532_a(pos, target.sideHit);
         }
     }
 }

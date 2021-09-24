@@ -1501,9 +1501,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             {
                 BlockPos var2 = this.objectMouseOver.getBlockPos();
 
-                if (this.theWorld.getBlockState(var2).getBlock().getMaterial() != Material.air && this.playerController.func_180512_c(var2, this.objectMouseOver.field_178784_b))
+                if (this.theWorld.getBlockState(var2).getBlock().getMaterial() != Material.air && this.playerController.func_180512_c(var2, this.objectMouseOver.sideHit))
                 {
-                    this.effectRenderer.func_180532_a(var2, this.objectMouseOver.field_178784_b);
+                    this.effectRenderer.func_180532_a(var2, this.objectMouseOver.sideHit);
                     this.thePlayer.swingItem();
                 }
             }
@@ -1542,7 +1542,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
                         if (this.theWorld.getBlockState(var1).getBlock().getMaterial() != Material.air)
                         {
-                            this.playerController.func_180511_b(var1, this.objectMouseOver.field_178784_b);
+                            this.playerController.func_180511_b(var1, this.objectMouseOver.sideHit);
                             break;
                         }
 
@@ -1593,7 +1593,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     {
                         int var4 = var2 != null ? var2.stackSize : 0;
 
-                        if (this.playerController.func_178890_a(this.thePlayer, this.theWorld, var2, var3, this.objectMouseOver.field_178784_b, this.objectMouseOver.hitVec))
+                        if (this.playerController.func_178890_a(this.thePlayer, this.theWorld, var2, var3, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec))
                         {
                             var1 = false;
                             this.thePlayer.swingItem();
@@ -3282,7 +3282,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         HashMap var0 = Maps.newHashMap();
         var0.put("X-Minecraft-Username", getMinecraft().getSession().getUsername());
         var0.put("X-Minecraft-UUID", getMinecraft().getSession().getPlayerID());
-        var0.put("X-Minecraft-Version", "1.8");
+        var0.put("X-Minecraft-Version", "1.17.1");
         return var0;
     }
 

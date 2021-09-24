@@ -1,11 +1,12 @@
 package intentions.util;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.AxisAlignedBB;
-
-import org.lwjgl.opengl.GL11;
 
 public class RenderUtils {
 	
@@ -229,6 +230,10 @@ public class RenderUtils {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
 	}
+	
+	public static void drawRect(int left, int top, int right, int bottom, int color) {
+        Gui.drawRect(left, top, right, bottom, color);
+    }
 	
 	public static void drawTracerLine(double x, double y, double z, float red, float green, float blue, float alpha, float lineWdith) {
 		GL11.glPushMatrix();

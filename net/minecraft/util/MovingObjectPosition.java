@@ -7,7 +7,7 @@ public class MovingObjectPosition {
 
 	/** What type of ray trace hit was this? 0 = block, 1 = entity */
 	public MovingObjectPosition.MovingObjectType typeOfHit;
-	public EnumFacing field_178784_b;
+	public EnumFacing sideHit;
 
 	/** The vector position of the hit */
 	public Vec3 hitVec;
@@ -31,7 +31,7 @@ public class MovingObjectPosition {
 			BlockPos blockPosIn) {
 		this.typeOfHit = typeOfHitIn;
 		this.blockPos = blockPosIn;
-		this.field_178784_b = sideHitIn;
+		this.sideHit = sideHitIn;
 		this.hitVec = new Vec3(hitVecIn.xCoord, hitVecIn.yCoord, hitVecIn.zCoord);
 	}
 
@@ -46,7 +46,7 @@ public class MovingObjectPosition {
 	}
 
 	public String toString() {
-		return "HitResult{type=" + this.typeOfHit + ", blockpos=" + this.blockPos + ", f=" + this.field_178784_b + ", pos="
+		return "HitResult{type=" + this.typeOfHit + ", blockpos=" + this.blockPos + ", f=" + this.sideHit + ", pos="
 				+ this.hitVec + ", entity=" + this.entityHit + '}';
 	}
 

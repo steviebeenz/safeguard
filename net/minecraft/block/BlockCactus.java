@@ -91,7 +91,7 @@ public class BlockCactus extends Block
 
     public boolean isFullCube()
     {
-        return false;
+        return true;
     }
 
     public boolean isOpaqueCube()

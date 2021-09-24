@@ -617,6 +617,7 @@ public class PlayerControllerMP
     public boolean onPlayerRightClick(EntityPlayer player, WorldClient worldIn, ItemStack heldStack, BlockPos hitPos,
 			EnumFacing side, Vec3 hitVec) {
 		this.syncCurrentPlayItem();
+		float f = (float) (hitVec.xCoord - (double) hitPos.getX());
 		float f1 = (float) (hitVec.yCoord - (double) hitPos.getY());
 		float f2 = (float) (hitVec.zCoord - (double) hitPos.getZ());
 		boolean flag = false;

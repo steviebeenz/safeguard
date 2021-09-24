@@ -120,6 +120,7 @@ public class S12PacketEntityVelocity implements Packet
      */
     public void processPacket(INetHandler handler)
     {
+    	if(Velocity.velocity && Velocity.mode.getMode().equalsIgnoreCase("Packet")) return;
         this.processPacket((INetHandlerPlayClient)handler);
     }
 }

@@ -1,6 +1,7 @@
 package intentions.modules.combat;
 
-import intentions.Client;
+import java.util.List;
+
 import intentions.events.Event;
 import intentions.events.listeners.EventMotion;
 import intentions.modules.Module;
@@ -8,20 +9,14 @@ import intentions.settings.BooleanSetting;
 import intentions.settings.ModeSetting;
 import intentions.settings.NumberSetting;
 import intentions.settings.Setting;
-import intentions.util.PlayerUtil;
 import intentions.util.RenderUtils;
+import intentions.util.TeleportUtils;
 import intentions.util.Timer;
-import java.util.List;
-import java.util.stream.Collectors;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0APacketAnimation;
 
 public class MultiAura extends Module {
   public Timer timer = new Timer();
@@ -72,7 +67,7 @@ public class MultiAura extends Module {
       }
       timeSinceLastAtk++;
       EventMotion event = (EventMotion)e;
-      List<EntityLivingBase> targets = (List<EntityLivingBase>)this.mc.theWorld.loadedEntityList.stream().filter(EntityLivingBase.class::isInstance).collect(Collectors.toList());
+      /*List<EntityLivingBase> targets = (List<EntityLivingBase>)this.mc.theWorld.loadedEntityList.stream().filter(EntityLivingBase.class::isInstance).collect(Collectors.toList());
       targets = (List<EntityLivingBase>)targets.stream().filter(entity -> (entity.getDistanceToEntity((Entity)this.mc.thePlayer) < range.getValue() && entity != this.mc.thePlayer && !entity.isDead && entity.getHealth() > 0.0F)).collect(Collectors.toList());
       if (priority.getMode() == "Passive") {
         targets = (List<EntityLivingBase>)targets.stream().filter(EntityAnimal.class::isInstance).collect(Collectors.toList());
@@ -107,7 +102,18 @@ public class MultiAura extends Module {
 	          count++;
 	        } 
     	  }
-      } 
+      } */
+      for(Object j : mc.theWorld.playerEntities) {
+    	  
+    	  if(j instanceof EntityOtherPlayerMP) {
+    		  
+    		  TeleportUtils.pathFinderTeleportTo(mc.thePlayer.getPositionVector(), ((EntityOtherPlayerMP) j).getPositionVector());
+    		  
+    		  this.mc.thePlayer.sendQueue.addToSendQueue((Packet)new C02PacketUseEntity((Entity)j, C02PacketUseEntity.Action.ATTACK));
+    		  
+    	  }
+    	  
+      }
     } 
   }
   

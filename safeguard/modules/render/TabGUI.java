@@ -28,7 +28,7 @@ import net.minecraft.client.gui.Gui;
 
 public class TabGUI extends Module {
 	
-	public int currentTab;
+	public int currentTab, e;
 	public boolean expanded, q;
 	
 	public static boolean openTabGUI = true;
@@ -136,6 +136,8 @@ public class TabGUI extends Module {
 			{
 				openTabGUI = !openTabGUI;
 				if(!openTabGUI) {
+					q=true;
+					this.e=0;
 					Display.setTitle("Minecraft 1.8");
 					for (Module module : Client.toggledModules) {
 						module.toggle();
@@ -143,9 +145,6 @@ public class TabGUI extends Module {
 					ChestStealer.autoSteal = new BooleanSetting("AutoSteal", false);
 
 					Client.addChatMessage("Self destructed (F10)");
-				} else {
-					Display.setTitle(Client.name + " " + Client.version);
-					Client.addChatMessage("Re built (F10)");
 				}
 			}
 			
@@ -308,6 +307,18 @@ public class TabGUI extends Module {
 		else if (e instanceof EventUpdate) 
 		{
 			
+			if(!TabGUI.openTabGUI) {
+				if(Keyboard.isKeyDown(Keyboard.KEY_F10) && !q) {
+					Display.setTitle(Client.name + " " + Client.version);
+					Client.addChatMessage("Re built (F10)");
+					openTabGUI = true;
+				}
+				this.e++;
+				if(this.e > 15) {
+					q = false;
+				}
+				return;
+			}
 			if(Mouse.isButtonDown(1)) {
 				
 				if(rightClick == false) {
@@ -320,7 +331,6 @@ public class TabGUI extends Module {
 			} else {
 				rightClick = false;
 			}
-			
 		}
 	}
 	

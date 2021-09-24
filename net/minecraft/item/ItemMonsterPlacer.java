@@ -148,7 +148,7 @@ public class ItemMonsterPlacer extends Item
                         return itemStackIn;
                     }
 
-                    if (!playerIn.func_175151_a(var5, var4.field_178784_b, itemStackIn))
+                    if (!playerIn.func_175151_a(var5, var4.sideHit, itemStackIn))
                     {
                         return itemStackIn;
                     }

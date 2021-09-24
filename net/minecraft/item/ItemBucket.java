@@ -52,7 +52,7 @@ public class ItemBucket extends Item
 
                 if (var4)
                 {
-                    if (!playerIn.func_175151_a(var6.offset(var5.field_178784_b), var5.field_178784_b, itemStackIn))
+                    if (!playerIn.func_175151_a(var6.offset(var5.sideHit), var5.sideHit, itemStackIn))
                     {
                         return itemStackIn;
                     }
@@ -81,9 +81,9 @@ public class ItemBucket extends Item
                         return new ItemStack(Items.bucket);
                     }
 
-                    BlockPos var9 = var6.offset(var5.field_178784_b);
+                    BlockPos var9 = var6.offset(var5.sideHit);
 
-                    if (!playerIn.func_175151_a(var9, var5.field_178784_b, itemStackIn))
+                    if (!playerIn.func_175151_a(var9, var5.sideHit, itemStackIn))
                     {
                         return itemStackIn;
                     }

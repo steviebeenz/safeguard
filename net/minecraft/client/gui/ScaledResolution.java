@@ -5,11 +5,11 @@ import net.minecraft.util.MathHelper;
 
 public class ScaledResolution
 {
-    private final double scaledWidthD;
-    private final double scaledHeightD;
-    private int scaledWidth;
-    private int scaledHeight;
-    private int scaleFactor;
+    private static double scaledWidthD = 0;
+    private static double scaledHeightD = 0;
+    private static int scaledWidth;
+    private static int scaledHeight;
+    private static int scaleFactor;
     private static final String __OBFID = "CL_00000666";
 
     public ScaledResolution(Minecraft mcIn, int p_i46324_2_, int p_i46324_3_)
@@ -41,28 +41,28 @@ public class ScaledResolution
         this.scaledHeight = MathHelper.ceiling_double_int(this.scaledHeightD);
     }
 
-    public int getScaledWidth()
+    public static int getScaledWidth()
     {
-        return this.scaledWidth;
+        return scaledWidth;
     }
 
-    public int getScaledHeight()
+    public static int getScaledHeight()
     {
-        return this.scaledHeight;
+        return scaledHeight;
     }
 
-    public double getScaledWidth_double()
+    public static double getScaledWidth_double()
     {
-        return this.scaledWidthD;
+        return scaledWidthD;
     }
 
-    public double getScaledHeight_double()
+    public static double getScaledHeight_double()
     {
-        return this.scaledHeightD;
+        return scaledHeightD;
     }
 
-    public int getScaleFactor()
+    public static int getScaleFactor()
     {
-        return this.scaleFactor;
+        return scaleFactor;
     }
 }

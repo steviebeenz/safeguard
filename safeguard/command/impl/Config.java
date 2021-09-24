@@ -5,8 +5,10 @@ import intentions.command.Command;
 import intentions.modules.Module;
 import intentions.modules.combat.KillAura;
 import intentions.modules.combat.MultiAura;
+import intentions.modules.combat.Velocity;
 import intentions.modules.movement.Flight;
 import intentions.modules.movement.Speed;
+import intentions.modules.movement.Step;
 import intentions.modules.player.NoFall;
 import intentions.modules.render.ESP;
 import intentions.modules.world.AntiVoid;
@@ -90,6 +92,59 @@ public class Config extends Command {
     			  "LiquidInteract",
     			  "AntiVoid"});
     	  Client.addChatMessage("Loaded config \"Rededark\"");
+      } else if(args[0].equalsIgnoreCase("Hypixel")) {
+    	  while (!Flight.type.getMode().equalsIgnoreCase("Hypixel"))
+              Flight.type.cycle(); 
+    	  while (!Speed.bypass.getMode().equalsIgnoreCase("Hypixel"))
+              Speed.bypass.cycle();
+    	  while (!KillAura.sort.getMode().equalsIgnoreCase("Closest"))
+              KillAura.sort.cycle();
+    	  while (!KillAura.priority.getMode().equalsIgnoreCase("Players"))
+              KillAura.priority.cycle();
+    	  while (!NoFall.mode.getMode().equalsIgnoreCase("Hypixel"))
+    		  NoFall.mode.cycle();
+    	  while (!AntiVoid.mode.getMode().equalsIgnoreCase("Hypixel"))
+    		  AntiVoid.mode.cycle();
+    	  while (!Scaffold.mode.getMode().equalsIgnoreCase("Hypixel"))
+    		  Scaffold.mode.cycle();
+    	  while (!Step.mode.getMode().equalsIgnoreCase("Hypixel"))
+    		  Step.mode.cycle();
+    	  while (!Velocity.mode.getMode().equalsIgnoreCase("Normal"))
+    		  Velocity.mode.cycle();
+    	  Velocity.horizontal.setValue(0);
+    	  Velocity.vertical.setValue(0);
+    	  Scaffold.delay.setValue(0.0D);
+    	  ChestStealer.autoClose.enabled = true;
+    	  ChestStealer.autoSteal.enabled = true;
+    	  ChestStealer.stealSpeed.setValue(70.0D);
+    	  KillAura.cps.setValue(20.0D);
+    	  KillAura.range.setValue(4.3D);
+    	  KillAura.esp.setEnabled(true);
+    	  KillAura.noSwing.setEnabled(false);
+    	  KillAura.invisibles.setEnabled(false);
+    	  KillAura.death.setEnabled(true);
+    	  ESP.tracers.setEnabled(true);
+    	  ESP.box.setEnabled(false);
+    	  ESP.player.setEnabled(true);
+    	  ESP.other.setEnabled(false);
+    	  ESP.mob.setEnabled(false);
+    	  ESP.animal.setEnabled(false);
+    	  ESP.ESPSelf.setEnabled(true);
+    	  for(Module m : Client.toggledModules) {
+    		  m.toggled = false;
+    	  }
+    	  nn(new String[] {
+    			  "FullBright",
+    			  "Sprint",
+    			  "NoFall",
+    			  "ESP",
+    			  "Velocity",
+    			  "BPS",
+    			  "Step",
+    			  "AutoTool",
+    			  "AutoArmor",
+    			  "AntiVoid",});
+    	  Client.addChatMessage("Loaded config \"Hypixel\"");
       } else {
         Client.addChatMessage("Can not find config \"" + args[0] + "\"");
       } 
@@ -104,9 +159,7 @@ public class Config extends Command {
 	  for(Module m : Client.modules) {
 		  for(String s : sl) {
 			  if(n(m, s)) {
-				  if(!m.toggled) {
-					  m.toggle();
-				  }
+				  m.toggled = true;
 			  }
 		  }
 	  }

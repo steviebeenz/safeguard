@@ -5,6 +5,7 @@ import java.util.List;
 import intentions.modules.player.Team;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -85,6 +86,16 @@ public class PlayerUtil {
 			}
 		}
 		return true;
+	}
+
+	
+	// CHEAT DETECTOR
+	public static boolean isValid(EntityOtherPlayerMP p) {
+		return !p.capabilities.allowFlying && p.isEntityAlive() && !p.capabilities.isCreativeMode;
+	}
+
+	public static boolean isUsingItem(EntityOtherPlayerMP p) {
+		return p.getItemInUse() != null;
 	}
 	
 }

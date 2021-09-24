@@ -16,6 +16,7 @@ import net.minecraft.block.BlockPackedIce;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -40,6 +41,22 @@ public class BlockUtils {
    private static ReflectorMethod ForgeBlock_setLightOpacity;
    private static boolean directAccessValid;
 
+	public static float[] getFacePos(Vec3 vec) {
+		double diffX = vec.xCoord + 0.5 - Minecraft.getMinecraft().thePlayer.posX;
+		double diffY = vec.yCoord + 0.5
+				- (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight());
+		double diffZ = vec.zCoord + 0.5 - Minecraft.getMinecraft().thePlayer.posZ;
+		double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+		float yaw = (float) (Math.atan2(diffZ, diffX) * 180.0D / Math.PI) - 90.0F;
+		float pitch = (float) -(Math.atan2(diffY, dist) * 180.0D / Math.PI);
+		float p = Minecraft.getMinecraft().thePlayer.rotationPitch
+				+ MathHelper.wrapAngleTo180_float(pitch - Minecraft.getMinecraft().thePlayer.rotationPitch);
+		return new float[] {
+				Minecraft.getMinecraft().thePlayer.rotationYaw
+						+ MathHelper.wrapAngleTo180_float(yaw - Minecraft.getMinecraft().thePlayer.rotationYaw),
+				p};
+	}
+   
    public Block getBlockByIDorName(String var1) {
       Block var2 = null;
 
@@ -469,5 +486,32 @@ public class BlockUtils {
 		}
 		
 		return blocks;
+	}
+
+	public static Block[] getBlocksBelowEntity(EntityOtherPlayerMP p) {
+		Block[] blocks = new Block[9];
+		
+		double expand = 0.3;
+		int runs = 0;
+		
+		for(double x=-expand;x<=expand;x+=expand) {
+			for(double z=-expand;z<=expand;z+=expand) {
+				try {
+					Block b = mc.theWorld.getBlockState(new BlockPos(p.posX + x, p.posY - 0.5001, p.posZ + z)).getBlock();
+					if(b != null) {
+						blocks[runs] = b;
+						runs++;
+					}
+				} catch(NullPointerException e) {
+					
+				}
+			}
+		}
+		
+		return blocks;
+	}
+
+	public static boolean isIce(Block b) {
+		return b.getMaterial() == Material.ice || b.getMaterial() == Material.packedIce;
 	}
 }
